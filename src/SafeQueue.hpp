@@ -10,6 +10,7 @@
 
 #include "ISafeQueue.hpp"
 #include <queue>
+#include <mutex>
 
 namespace Plazza {
     class SafeQueue: public ISafeQueue {
@@ -22,6 +23,7 @@ namespace Plazza {
 
         private:
             std::queue<int> _queue;
+            std::mutex _queueMutex;
     };
 }
 
