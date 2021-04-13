@@ -23,7 +23,7 @@ namespace Plazza {
 
         private:
             std::queue<int> _queue;
-            std::mutex _queueMutex;
+            std::mutex _queue_mutex;
     };
 }
 

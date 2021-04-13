@@ -12,5 +12,9 @@
 #include <string>
 #include <pthread.h>
 #include <memory>
+#include <thread>
+#include <chrono>
+#include <map>
+#include <unordered_map>
 
 #endif /* !INCLUDE_HPP_ */

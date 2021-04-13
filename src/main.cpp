@@ -6,33 +6,25 @@
 */
 
 #include "../include/include.hpp"
-#include "ScopedLock.hpp"
-#include "Thread.hpp"
-
-std::shared_ptr<Plazza::IMutex> mutex = std::make_shared<Plazza::AMutex>();
-
-void *incrementCounter(void *number)
-{
-    Plazza::ScopedLock lock(mutex);
-    int n = 10;
-    int *num = (int *)number;
-    printf("start incrementing counter: %d\n", *num);
-    for (int i = 0; i < n; i += 1)
-        (*num) += 1;
-    printf("end incrementing counter: %d\n", *num);
-    return (nullptr);
-}
+#include "Producer.hpp"
+#include "Consumer.hpp"
+#include "SafeQueue.hpp"
 
 int main(int __attribute__((unused))ac, char *av[])
 {
-    int numberThreads = std::stoi(std::string(av[1]));
-    int value = 0;
+    int number = std::stoi(std::string(av[1]));
+    std::unordered_map<std::shared_ptr<Plazza::Producer>, std::shared_ptr<Plazza::Consumer>> _map;
+    Plazza::ISafeQueue *queue = new Plazza::SafeQueue();
 
-    for (int index = 0; index < numberThreads; index += 1)
+    srand(time(NULL));
+    for (int index = 0; index < number; index += 1)
     {
-        std::shared_ptr<Plazza::Thread> thread = std::make_shared<Plazza::Thread>(incrementCounter, &value);
-        thread->run();
+        _map[std::make_shared<Plazza::Producer>(*queue)] = std::make_shared<Plazza::Consumer>(*queue);
     }
-    printf("%d\n", value);
+    for (auto &n: _map) {
+        n.first.get()->startProducing();
+        n.second.get()->startConsuming();
+    }
+    //delete queue;
     return (0);
 }

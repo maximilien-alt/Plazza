@@ -8,11 +8,13 @@
 #ifndef ISAFEQUEUE_HPP_
 #define ISAFEQUEUE_HPP_
 
-class ISafeQueue {
-    public:
-        virtual ~ISafeQueue() = default;
-        virtual void push(int value) = 0;
-        virtual bool tryPop(int &value) = 0;
-};
+namespace Plazza {
+    class ISafeQueue {
+        public:
+            virtual ~ISafeQueue() = default;
+            virtual void push(int value) = 0;
+            virtual bool tryPop(int &value) = 0;
+    };
+}
 
 #endif /* !ISAFEQUEUE_HPP_ */

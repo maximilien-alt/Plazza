@@ -38,6 +38,7 @@ namespace Plazza
         pthread_t _thread;
         method_ptr_t _func;
         void *_args;
+        bool _created;
     };
 }
 

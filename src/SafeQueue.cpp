@@ -9,13 +9,13 @@
 
 void Plazza::SafeQueue::push(int value)
 {
-    std::lock_guard<std::mutex> guard(_queueMutex);
+    std::lock_guard<std::mutex> guard(_queue_mutex);
     _queue.push(value);
 }
 
 bool Plazza::SafeQueue::tryPop(int &value)
 {
-    std::lock_guard<std::mutex> guard(_queueMutex);
+    std::lock_guard<std::mutex> guard(_queue_mutex);
     if (_queue.empty())
         return 0;
     value = _queue.front();

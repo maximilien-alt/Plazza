@@ -7,14 +7,14 @@
 
 #include "Thread.hpp"
 
-Plazza::Thread::Thread(method_ptr_t start, void *args): _status(STARTED), _func(start), _args(args)
+Plazza::Thread::Thread(method_ptr_t start, void *args): _status(STARTED), _func(start), _args(args), _created(0)
 {
 
 }
 
 Plazza::Thread::~Thread()
 {
-    if (_status != DEAD)
+    if (_status != DEAD && _created)
         pthread_join(_thread, nullptr);
 };
 
@@ -25,6 +25,8 @@ void Plazza::Thread::run()
     _status = RUNNING;
     if (pthread_create(&_thread, NULL, _func, _args) != 0)
         _status = DEAD;
+    else
+        _created = 1;
 };
 
 void Plazza::Thread::cancel()

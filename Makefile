@@ -9,7 +9,7 @@ NAME	=	 plazza
 
 SRC	=	$(wildcard src/*.cpp)	\
 
-SRC_FLAGS	=	-W -Wall -Wextra -lpthread
+SRC_FLAGS	=	-W -Wall -Wextra -lpthread -g3
 
 OBJ_SRC	=	$(SRC:.cpp=.o)
 
