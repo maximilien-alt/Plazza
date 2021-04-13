@@ -15,14 +15,15 @@
 namespace Plazza {
     class Producer {
         public:
-            Producer(ISafeQueue &queue);
+            Producer(ISafeQueue &queue, int);
             ~Producer() = default;
 
-            void startProducing();
+            static int produce(Plazza::ISafeQueue *q, int);
 
         private:
             ISafeQueue &_queue;
             std::shared_ptr<Plazza::Thread> _thread;
+            int _id;
     };
 }
 

@@ -10,30 +10,24 @@
 
 std::shared_ptr<Plazza::IMutex> mutexSh = std::make_shared<Plazza::AMutex>();
 
-void *produce(void *queue)
+int Plazza::Producer::produce(Plazza::ISafeQueue *q, int id)
 {
     Plazza::ScopedLock lock(mutexSh);
-    Plazza::ISafeQueue *q = (Plazza::ISafeQueue *)(queue);
     int value = rand() % 10;
 
     if (!q) {
         printf("Empty queue!\n");
-        return nullptr;
+        return 0;
     }
-    while (1) {
-        value = rand() % 10;
-        q->push(value);
-        printf("I produce the %d value!\n", value);
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-    return nullptr;
+    value = rand() % 10;
+    q->push(value);
+    q->getConditionVariable().notify_all();
+    printf("[Thread Producer %d]: I produce the %d value!\n", id, value);
+    return 0;
 }
 
-Plazza::Producer::Producer(ISafeQueue &queue): _queue(queue), _thread(std::make_shared<Thread>(produce, &queue))
+Plazza::Producer::Producer(ISafeQueue &queue, int id): _queue(queue), _thread(std::make_shared<Thread>(produce, &queue, id))
 {
-}
-
-void Plazza::Producer::startProducing()
-{
-    _thread->run();
+    _id = id;
+    printf("Thread Producer %d created!\n", _id);
 }

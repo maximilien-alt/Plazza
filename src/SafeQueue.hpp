@@ -9,8 +9,7 @@
 #define SAFEQUEUE_HPP_
 
 #include "ISafeQueue.hpp"
-#include <queue>
-#include <mutex>
+#include "../include/include.hpp"
 
 namespace Plazza {
     class SafeQueue: public ISafeQueue {
@@ -20,10 +19,14 @@ namespace Plazza {
 
             void push(int) final;
             bool tryPop(int &) final;
+            int pop() final;
+
+            std::condition_variable &getConditionVariable() final;
 
         private:
             std::queue<int> _queue;
             std::mutex _queue_mutex;
+            std::condition_variable _cv;
     };
 }
 

@@ -19,12 +19,7 @@ int main(int __attribute__((unused))ac, char *av[])
     srand(time(NULL));
     for (int index = 0; index < number; index += 1)
     {
-        _map[std::make_shared<Plazza::Producer>(*queue)] = std::make_shared<Plazza::Consumer>(*queue);
+        _map[std::make_shared<Plazza::Producer>(*queue, index)] = std::make_shared<Plazza::Consumer>(*queue, index);
     }
-    for (auto &n: _map) {
-        n.first.get()->startProducing();
-        n.second.get()->startConsuming();
-    }
-    //delete queue;
     return (0);
 }

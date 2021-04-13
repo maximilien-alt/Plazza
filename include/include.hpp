@@ -16,5 +16,8 @@
 #include <chrono>
 #include <map>
 #include <unordered_map>
+#include <condition_variable>
+#include <queue>
+#include <mutex>
 
 #endif /* !INCLUDE_HPP_ */

@@ -15,14 +15,15 @@
 namespace Plazza {
     class Consumer {
         public:
-            Consumer(ISafeQueue &queue);
+            Consumer(ISafeQueue &queue, int);
             ~Consumer() = default;
 
-            void startConsuming();
+            static int consume(Plazza::ISafeQueue *q, int);
 
         private:
             ISafeQueue &_queue;
             std::shared_ptr<Plazza::Thread> _thread;
+            int _id;
     };
 }
 

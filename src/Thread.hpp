@@ -10,8 +10,6 @@
 
 #include "../include/include.hpp"
 
-using method_ptr_t = void *(*)(void *);
-
 namespace Plazza
 {
     class Thread
@@ -19,25 +17,23 @@ namespace Plazza
     public:
         enum STATUS
         {
-            STARTED,
             RUNNING,
             DEAD
         };
-        Thread(method_ptr_t start, void *args = nullptr);
+
+        template <class Fn, class... Args>
+        explicit Thread (Fn&& fn, Args&&... args): _thread(fn, args...), _status(RUNNING), _created(1) {
+        };
 
         ~Thread();
-
-        void run();
 
         void cancel();
 
         STATUS getCurrentStatus() const;
 
     private:
+        std::thread _thread;
         STATUS _status;
-        pthread_t _thread;
-        method_ptr_t _func;
-        void *_args;
         bool _created;
     };
 }

@@ -10,31 +10,22 @@
 
 std::shared_ptr<Plazza::IMutex> mutexSh1 = std::make_shared<Plazza::AMutex>();
 
-
-void *consume(void *queue)
+int Plazza::Consumer::consume(Plazza::ISafeQueue *q, int id)
 {
     Plazza::ScopedLock lock(mutexSh1);
-    Plazza::ISafeQueue *q = (Plazza::ISafeQueue *)(queue);
     int value = 0;
 
     if (!q) {
         printf("Empty queue!\n");
-        return nullptr;
+        return 0;
     }
-    while (1) {
-        if (!q->tryPop(value)) {
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-        } else
-            printf("I Consume the %d value!\n", value);
-    }
-    return nullptr;
+    value = q->pop();
+    printf("[Thread Consumer %d]: I Consume the %d value!\n", id, value);
+    return 0;
 }
 
-Plazza::Consumer::Consumer(ISafeQueue &queue): _queue(queue), _thread(std::make_shared<Thread>(consume, &queue))
+Plazza::Consumer::Consumer(ISafeQueue &queue, int id): _queue(queue), _thread(std::make_shared<Thread>(consume, &queue, id))
 {
-}
-
-void Plazza::Consumer::startConsuming()
-{
-    _thread->run();
+    _id = id;
+    printf("Thread Consumer %d created!\n", _id);
 }
