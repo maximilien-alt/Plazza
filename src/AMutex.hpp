@@ -17,9 +17,9 @@ namespace Plazza {
     {
         public:
             AMutex();
-            void lock();
-            void unlock();
-            void trylock();
+            void lock() final;
+            void unlock() final;
+            void trylock() final;
 
         private:
             pthread_mutex_t mutex_stock;
