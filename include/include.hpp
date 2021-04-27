@@ -24,4 +24,23 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <stdbool.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <time.h>
+#include <sys/wait.h>
+
 #endif /* !INCLUDE_HPP_ */

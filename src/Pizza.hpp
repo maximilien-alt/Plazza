@@ -36,6 +36,7 @@ namespace Plazza
     {
         public:
             Pizza(const std::string &, const std::string &);
+            Pizza(const PizzaType &, const PizzaSize &);
             ~Pizza();
 
             PizzaType getType() const;

@@ -10,27 +10,22 @@
 
 #include "Order.hpp"
 #include "Kitchen.hpp"
+#include "KitchenManager.hpp"
 
 namespace Plazza {
     class Reception {
         public:
-            Reception(const int &, const int &, const int &);
+            Reception();
             ~Reception();
 
-            void loopOrders();
-            void HandleOrders();
-            void OneOrder(Plazza::Order &);
+            std::vector<Order> getOrders(bool &);
 
         private:
-            int _timeMultiplier;
-            int _cooksPerKitchen;
-            int _IngredientsCoolDown;
             std::string _line;
             std::vector<std::string> _currentOrders;
-            std::vector<Plazza::Order> _orders;
-            std::vector<Kitchen> _kitchens;
 
             void displayStatus();
+            void OneOrder(Plazza::Order &);
     };
 }
 

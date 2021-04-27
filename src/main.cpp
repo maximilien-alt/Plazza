@@ -7,6 +7,7 @@
 
 #include "../include/include.hpp"
 #include "Reception.hpp"
+#include "Server.hpp"
 
 bool is_digit(const char value)
 {
@@ -24,9 +25,10 @@ int main(int ac, char *av[])
         if (!isnum(tab[index - 1]))
             return (84);
     }
-    Plazza::Reception host(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]));
     try {
-        host.loopOrders();
+        Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]));
+        server.initSocket();
+        server.loop();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return (84);

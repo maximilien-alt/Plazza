@@ -10,11 +10,12 @@
 
 #include "../include/include.hpp"
 #include "Cook.hpp"
-#include "Order.hpp"
+#include "SafeQueue.hpp"
 
 namespace Plazza {
     class Kitchen {
         public:
+            Kitchen() = default;
             Kitchen(const int &, const int &, const int &);
             ~Kitchen();
 
@@ -22,14 +23,17 @@ namespace Plazza {
             int howManyPizzasCanITake() const;
             int howManyPizzasAreCooking() const;
             void addPizzaToQueue(Plazza::Pizza &);
-            void takeOrder(Plazza::Order &);
+            void takeOrder(std::string buffer);
+            void startProcess(int);
+            int getFd() const;
 
         private:
             int _cooksNumber;
             int _IngredientsCoolDown;
             int _timeMultiplier;
+            int _fd;
             std::vector<Plazza::Cook> _cooks;
-            ISafeQueue *_queue;
+            mutable ISafeQueue *_queue;
     };
 }
 

@@ -7,6 +7,10 @@
 
 #include "Pizza.hpp"
 
+Plazza::Pizza::Pizza(const PizzaType &type, const PizzaSize &size): _type(type), _size(size)
+{
+}
+
 Plazza::Pizza::Pizza(const std::string &type, const std::string &size): _type(Plazza::PizzaType::None), _size(Plazza::PizzaSize::Null)
 {
     if (type == "regina")

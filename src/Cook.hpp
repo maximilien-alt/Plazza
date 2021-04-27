@@ -9,25 +9,20 @@
 #define COOK_HPP_
 
 #include "../include/include.hpp"
-#include "ScopedLock.hpp"
-#include "Thread.hpp"
-#include "SafeQueue.hpp"
+#include "Pizza.hpp"
+#include "AMutex.hpp"
 
 namespace Plazza {
     class Cook {
         public:
-            Cook(ISafeQueue &, int, bool *);
+            Cook();
             ~Cook();
 
             bool isCooking() const;
-            static int startCooking(Plazza::ISafeQueue *q, int, bool *);
+            void cook(Pizza toCook);
 
         private:
-            ISafeQueue &_queue;
-            bool *_isCooking;
-            int _timeMultiplier;
-            std::shared_ptr<Plazza::Thread> _thread;
-
+            bool _isCooking;
     };
 }
 
