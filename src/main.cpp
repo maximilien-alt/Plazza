@@ -6,20 +6,30 @@
 */
 
 #include "../include/include.hpp"
-#include "Producer.hpp"
-#include "Consumer.hpp"
-#include "SafeQueue.hpp"
+#include "Reception.hpp"
 
-int main(int __attribute__((unused))ac, char *av[])
+bool is_digit(const char value)
 {
-    int number = std::stoi(std::string(av[1]));
-    std::unordered_map<std::shared_ptr<Plazza::Producer>, std::shared_ptr<Plazza::Consumer>> _map;
-    Plazza::ISafeQueue *queue = new Plazza::SafeQueue();
+    return std::isdigit(value);
+}
 
-    srand(time(NULL));
-    for (int index = 0; index < number; index += 1)
-    {
-        _map[std::make_shared<Plazza::Producer>(*queue, index)] = std::make_shared<Plazza::Consumer>(*queue, index);
+int main(int ac, char *av[])
+{
+    if (ac != 4)
+        return (84);
+    auto isnum = [](const std::string& value){return std::all_of(value.begin(), value.end(), is_digit);};
+    std::string tab[3];
+    for (int index = 1; index < ac; index += 1) {
+        tab[index - 1] = std::string(av[index]);
+        if (!isnum(tab[index - 1]))
+            return (84);
+    }
+    Plazza::Reception host(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]));
+    try {
+        host.loopOrders();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return (84);
     }
     return (0);
 }

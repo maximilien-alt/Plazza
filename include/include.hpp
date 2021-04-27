@@ -19,5 +19,9 @@
 #include <condition_variable>
 #include <queue>
 #include <mutex>
+#include <algorithm>
+#include <regex>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #endif /* !INCLUDE_HPP_ */

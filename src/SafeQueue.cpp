@@ -7,13 +7,20 @@
 
 #include "SafeQueue.hpp"
 
-void Plazza::SafeQueue::push(int value)
+void Plazza::SafeQueue::push(Plazza::Pizza value)
 {
     std::lock_guard<std::mutex> guard(_queue_mutex);
     _queue.push(value);
 }
 
-bool Plazza::SafeQueue::tryPop(int &value)
+int Plazza::SafeQueue::getSize() const
+{
+    if (_queue.empty())
+        return 0;
+    return _queue.size();
+}
+
+bool Plazza::SafeQueue::tryPop(Plazza::Pizza &value)
 {
     std::lock_guard<std::mutex> guard(_queue_mutex);
     if (_queue.empty())
@@ -23,14 +30,13 @@ bool Plazza::SafeQueue::tryPop(int &value)
     return 1;
 }
 
-int Plazza::SafeQueue::pop()
+Plazza::Pizza Plazza::SafeQueue::pop()
 {
     std::unique_lock<std::mutex> guard(_queue_mutex);
-    int value = 0;
 
     if (_queue.empty())
         _cv.wait(guard);
-    value = _queue.front();
+    Plazza::Pizza value = _queue.front();
     _queue.pop();
     return value;
 }

@@ -9,15 +9,19 @@
 #define ISAFEQUEUE_HPP_
 
 #include "../include/include.hpp"
+#include "Pizza.hpp"
 
 namespace Plazza {
+    class Order;
+    class Cook;
     class ISafeQueue {
         public:
             virtual ~ISafeQueue() = default;
-            virtual void push(int value) = 0;
-            virtual bool tryPop(int &value) = 0;
-            virtual int pop() = 0;
+            virtual void push(Plazza::Pizza value) = 0;
+            virtual bool tryPop(Plazza::Pizza &value) = 0;
+            virtual Plazza::Pizza pop() = 0;
             virtual std::condition_variable &getConditionVariable() = 0;
+            virtual int getSize() const = 0;
     };
 }
 
