@@ -26,6 +26,7 @@ namespace Plazza {
             void takeOrder(std::string buffer);
             void startProcess(int);
             int getFd() const;
+            void setFd(int newFd);
 
         private:
             int _cooksNumber;

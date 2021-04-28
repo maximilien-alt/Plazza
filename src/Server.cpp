@@ -49,6 +49,9 @@ void Plazza::Server::createKitchen()
 
     if (fork() == 0) {
         int socketId = socket(PF_INET, SOCK_STREAM, 0);
+        //_settings.sin_family = AF_INET;
+        //_settings.sin_port = htonl(_listeningPort);
+        //_settings.sin_addr.s_addr = inet_addr("127.0.0.1");
         while (connect(socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1);
         newOne.startProcess(socketId);
         exit(0);
@@ -63,13 +66,18 @@ void Plazza::Server::OneOrder(Plazza::Order &order)
     std::vector<Plazza::Pizza> pizzas = order.getPizzas();
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
-        Plazza::Kitchen kitchen = _kitchenManager.at(index);
-        int maxPizzas = kitchen.howManyPizzasCanITake();
-        for (int i = 0; i < maxPizzas; i += 1) {
-            if (pizzas.empty())
-                return;
-            dprintf(kitchen.getFd(), "%d %d\n", (int)pizzas[0].getType(), (int)pizzas[0].getSize());
-            pizzas.erase(pizzas.begin());
+        try {
+            Plazza::Kitchen kitchen = _kitchenManager.at(index);
+            int maxPizzas = kitchen.howManyPizzasCanITake();
+            for (int i = 0; i < maxPizzas; i += 1) {
+                if (pizzas.empty())
+                    return;
+                dprintf(kitchen.getFd(), "%d %d\n", (int)pizzas[0].getType(), (int)pizzas[0].getSize());
+                pizzas.erase(pizzas.begin());
+            }
+        } catch (const std::exception &e) {
+            std::cerr << e.what();
+            return;
         }
     }
     if (!pizzas.empty()) {
@@ -94,7 +102,7 @@ void Plazza::Server::readFromKitchen(int fd)
     char *buffer = NULL;
     if (getline(&buffer, &len, fp) == -1)
         return;
-    printf("ca marche ?! %s\n", buffer);
+    printf("recu: %s, depuis la kitchen avec le fd: %d\n", buffer, fd);
     fclose(fp);
 }
 

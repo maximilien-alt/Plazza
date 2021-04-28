@@ -22,6 +22,7 @@ bool Plazza::KitchenManager::empty() const
 
 void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen)
 {
+    kitchen.setFd(fd);
     _kitchens[fd] = kitchen;
 }
 
@@ -32,9 +33,12 @@ Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int c
 
 void Plazza::KitchenManager::dump()
 {
-    for (size_t index = 0; index < _kitchens.size(); index += 1) {
-        std::cout << "  Kitchen number " << index + 1 << ":" << std::endl;
-        _kitchens[index].dump();
+    int index = 1;
+
+    for (auto &n: _kitchens) {
+        std::cout << "  Kitchen number " << index << ":" << std::endl;
+        dprintf(n.first, "dump\n");
+        index += 1;
     }
 }
 
@@ -45,5 +49,12 @@ size_t Plazza::KitchenManager::size() const
 
 Plazza::Kitchen &Plazza::KitchenManager::at(int pos)
 {
-    return _kitchens[pos];
+    int index = 0;
+
+    for (auto &n: _kitchens) {
+        if (index == pos)
+            return n.second;
+        index += 1;
+    }
+    throw Error("[KitchenManager]: No kitchen found with this index! ('" + std::to_string(pos) + "')");
 }

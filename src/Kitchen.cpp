@@ -7,11 +7,10 @@
 
 #include "Kitchen.hpp"
 
-Plazza::Kitchen::Kitchen(const int &cooks, const int &cooldown, const int &time): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _queue(new SafeQueue())
+Plazza::Kitchen::Kitchen(const int &time, const int &cooks, const int &cooldown): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _queue(new SafeQueue())
 {
-    for (int index = 0; index < _cooksNumber; index += 1) {
+    for (int index = 0; index < _cooksNumber; index += 1)
         _cooks.push_back(Plazza::Cook());
-    }
 }
 
 Plazza::Kitchen::~Kitchen()
@@ -29,12 +28,7 @@ int Plazza::Kitchen::howManyPizzasAreCooking() const
 
 int Plazza::Kitchen::howManyPizzasCanITake() const
 {
-    if (!_queue) {
-        std::cout << "ERROR"<< std::endl;
-        _queue = new SafeQueue();
-    }
-    return (2 * _cooksNumber - _queue->getSize() - \
-    howManyPizzasAreCooking());
+    return (2 * _cooksNumber - _queue->getSize() - howManyPizzasAreCooking());
 }
 
 void Plazza::Kitchen::dump() const
@@ -76,6 +70,11 @@ void Plazza::Kitchen::takeOrder(std::string buffer)
     _queue->getConditionVariable().notify_all();
 }
 
+void Plazza::Kitchen::setFd(int newFd)
+{
+    _fd = newFd;
+}
+
 void Plazza::Kitchen::startProcess(int fd)
 {
     FILE *fp = fdopen(fd, "rw");
@@ -90,7 +89,12 @@ void Plazza::Kitchen::startProcess(int fd)
         if (select(FD_SETSIZE, &activeFds, NULL, NULL, NULL) < 0)
             continue;
         getline(&buffer, &size, fp);
-        takeOrder(std::string(buffer));
+        std::string sbuffer(buffer);
+        sbuffer.erase(--sbuffer.end());
+        if (sbuffer == "dump")
+            dump();
+        else
+            takeOrder(sbuffer);
     }
     fclose(fp);
 }
