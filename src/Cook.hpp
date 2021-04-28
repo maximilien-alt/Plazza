@@ -28,7 +28,7 @@ namespace Plazza {
         private:
             bool _isCooking;
             bool _isRunning;
-            std::thread *_thread;
+            std::shared_ptr<Thread> _thread;
     };
 }
 

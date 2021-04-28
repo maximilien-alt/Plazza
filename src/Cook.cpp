@@ -34,7 +34,7 @@ void cook(Plazza::ISafeQueue *queue, bool &isCooking, int timeMultiplier)
     return;
 }
 
-Plazza::Cook::Cook(ISafeQueue &queue, int multiplier): _isCooking(0), _thread(new std::thread(cook, &queue, std::ref(_isCooking), multiplier))
+Plazza::Cook::Cook(ISafeQueue &queue, int multiplier): _isCooking(0), _thread(std::make_shared<Plazza::Thread>(cook, &queue, std::ref(_isCooking), multiplier))
 {
 }
 
@@ -45,5 +45,5 @@ bool Plazza::Cook::isCooking() const
 
 void Plazza::Cook::updateThreads()
 {
-    _thread->join();
+    //thread->join();
 }
