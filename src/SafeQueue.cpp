@@ -34,7 +34,7 @@ Plazza::Pizza Plazza::SafeQueue::pop()
 {
     std::unique_lock<std::mutex> guard(_queue_mutex);
 
-    if (_queue.empty())
+    while (_queue.empty())
         _cv.wait(guard);
     Plazza::Pizza value = _queue.front();
     _queue.pop();

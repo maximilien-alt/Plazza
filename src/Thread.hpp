@@ -27,6 +27,8 @@ namespace Plazza
 
         ~Thread();
 
+        void joinThreads();
+
         void cancel();
 
         STATUS getCurrentStatus() const;

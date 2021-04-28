@@ -13,6 +13,11 @@ Plazza::Thread::~Thread()
         _thread.join();
 };
 
+void Plazza::Thread::joinThreads()
+{
+    _thread.join();
+}
+
 void Plazza::Thread::cancel()
 {
     if (_status == DEAD)
@@ -23,5 +28,5 @@ void Plazza::Thread::cancel()
 
 Plazza::Thread::STATUS Plazza::Thread::getCurrentStatus() const
 {
-    return (_status);
+    return (_status);return (_status);
 }
