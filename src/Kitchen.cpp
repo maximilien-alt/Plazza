@@ -51,7 +51,7 @@ int Plazza::Kitchen::getFd() const
     return _fd;
 }
 
-void splitLineIntoVector(std::string toParse, std::vector<std::string> &vector, std::string delimiter)
+void split(std::string toParse, std::vector<std::string> &vector, std::string delimiter)
 {
     size_t pos = 0;
     std::string token;
@@ -71,7 +71,7 @@ void Plazza::Kitchen::takeOrder(std::string buffer)
     std::vector<std::string> vector;
     Plazza::PizzaSize size;
 
-    splitLineIntoVector(buffer, vector, " ");
+    split(buffer, vector, " ");
     size << vector[1];
     std::shared_ptr<Plazza::APizza> pizza = _factory.giveMeAPizza(vector[0], size, std::stoi(vector[2]), std::stoi(vector[3]), _timeMultiplier);
 

@@ -51,12 +51,12 @@ namespace Plazza
             void setCookingStatus(bool);
 
         protected:
+            PizzaSize _size;
             std::vector<Ingredients> _ingredients;
             int _orderId;
             int _pizzaId;
             float _bakedTime;
             bool _isCooked = false;
-            PizzaSize _size;
     };
 }
 
