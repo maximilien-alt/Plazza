@@ -27,7 +27,6 @@ int main(int ac, char *av[])
     }
     try {
         Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]));
-        server.initSocket();
         server.loop();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;

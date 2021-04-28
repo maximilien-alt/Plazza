@@ -9,7 +9,11 @@
 
 Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown)
 {
-    initSocket();
+    try {
+        _socket.createServerSocket();
+    } catch (const std::exception &e) {
+        throw Error(e.what());
+    }
     _reception = new Plazza::Reception();
 }
 
@@ -18,46 +22,18 @@ Plazza::Server::~Server()
     delete _reception;
 }
 
-int Plazza::Server::initSocket()
-{
-    _socketId = socket(PF_INET, SOCK_STREAM, 0);
-    if (_socketId == -1)
-        return (84);
-
-    bzero((char *) &_settings, sizeof(_settings));
-    _settings.sin_family = AF_INET;
-    _settings.sin_port = 0;
-    _settings.sin_addr.s_addr = inet_addr("127.0.0.1");
-    if (bind(_socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1)
-        return (84);
-
-    socklen_t len = sizeof(_settings);
-    if (getsockname(_socketId, (struct sockaddr *)&_settings, &len) == -1)
-        return (84);
-    if (listen(_socketId, 1) == -1)
-        return  (84);
-    _listeningPort = ntohs(_settings.sin_port);
-    FD_ZERO(&_activeFds);
-    FD_SET(_socketId, &_activeFds);
-    return (0);
-}
-
 void Plazza::Server::createKitchen()
 {
-    int size = sizeof(_settings);
     Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown);
 
     if (fork() == 0) {
-        int socketId = socket(PF_INET, SOCK_STREAM, 0);
-        //_settings.sin_family = AF_INET;
-        //_settings.sin_port = htonl(_listeningPort);
-        //_settings.sin_addr.s_addr = inet_addr("127.0.0.1");
-        while (connect(socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1);
-        newOne.startProcess(socketId);
+        Plazza::Socket kitchenSocket;
+        kitchenSocket._connect(_socket.getListenginPort());
+        newOne.startProcess(kitchenSocket);
         exit(0);
     }
-    int fd = accept(_socketId, (struct sockaddr *)&_settings, (socklen_t *)&size);
-    FD_SET(fd, &_activeFds);
+    int fd = _socket._accept();
+    _socket.setActiveFd(fd);
     _kitchenManager.addKitchen(fd, newOne);
 }
 
@@ -97,12 +73,9 @@ void Plazza::Server::parseOrders(std::vector<Plazza::Order> orders)
 
 void Plazza::Server::readFromKitchen(int fd)
 {
-    FILE *fp = fdopen(fd, "r");
-    size_t len = 0;
-    char *buffer = NULL;
-    if (getline(&buffer, &len, fp) == -1)
-        return;
-    printf("recu: %s, depuis la kitchen avec le fd: %d\n", buffer, fd);
+    FILE *fp = _socket._fdopen(fd, "r");
+    std::string buffer = _socket._getline(fp);
+    std::cout << "recu: " + buffer + " depuis la kitchen avec le fd: " << fd << std::endl;
     fclose(fp);
 }
 
@@ -129,15 +102,13 @@ void Plazza::Server::loop()
 {
     int value = 0;
 
-    FD_SET(0, &_activeFds);
+    _socket.setActiveFd(0);
     while (1) {
-        _readFds = _activeFds;
-        value = select(FD_SETSIZE, &_readFds, NULL, NULL, NULL);
+        value = _socket._select();
         if (value < 0)
             continue;
-        for (int i = 0; i < FD_SETSIZE; i += 1)
-            if (FD_ISSET(i, &_readFds))
+        for (int i = 0; i < _socket.getFdsSize(); i += 1)
+            if (_socket.isFdSet(i))
                 acceptOrRead(i);
     }
-    close(_socketId);
 }

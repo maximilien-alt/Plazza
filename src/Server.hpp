@@ -10,6 +10,7 @@
 
 #include "../include/include.hpp"
 #include "KitchenManager.hpp"
+#include "Socket.hpp"
 #include "Reception.hpp"
 
 namespace Plazza {
@@ -18,18 +19,13 @@ namespace Plazza {
             Server(const int &, const int &, const int &);
             ~Server();
 
-            int initSocket();
             void loop();
 
         private:
             int _timeMultiplier;
             int _cooksPerKitchen;
             int _ingredientsCoolDown;
-            int _socketId;
-            int _listeningPort;
-            struct sockaddr_in _settings;
-            fd_set _activeFds;
-            fd_set _readFds;
+            Socket _socket;
             Reception *_reception;
             KitchenManager _kitchenManager;
             void acceptOrRead(int);

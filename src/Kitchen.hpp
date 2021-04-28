@@ -11,6 +11,7 @@
 #include "../include/include.hpp"
 #include "Cook.hpp"
 #include "SafeQueue.hpp"
+#include "Socket.hpp"
 
 namespace Plazza {
     class Kitchen {
@@ -24,7 +25,7 @@ namespace Plazza {
             int howManyPizzasAreCooking() const;
             void addPizzaToQueue(Plazza::Pizza &);
             void takeOrder(std::string buffer);
-            void startProcess(int);
+            void startProcess(Socket &);
             int getFd() const;
             void setFd(int newFd);
 

@@ -35,6 +35,7 @@ void Plazza::KitchenManager::dump()
 {
     int index = 1;
 
+    std::cout << "DUMP KITCHEN MANAGER!" << std::endl;
     for (auto &n: _kitchens) {
         std::cout << "  Kitchen number " << index << ":" << std::endl;
         dprintf(n.first, "dump\n");

@@ -75,21 +75,17 @@ void Plazza::Kitchen::setFd(int newFd)
     _fd = newFd;
 }
 
-void Plazza::Kitchen::startProcess(int fd)
+void Plazza::Kitchen::startProcess(Socket &socket)
 {
-    FILE *fp = fdopen(fd, "rw");
-    char *buffer = NULL;
-    size_t size = 0;
-    fd_set activeFds;
-    FD_ZERO(&activeFds);
-    FD_SET(fd, &activeFds);
+    int fd = socket.getSocketId();
+    FILE *fp = socket._fdopen(fd, "rw");
 
+    socket.setActiveFd(fd);
     _fd = fd;
     while (1) {
-        if (select(FD_SETSIZE, &activeFds, NULL, NULL, NULL) < 0)
+        if (socket._select() < 0)
             continue;
-        getline(&buffer, &size, fp);
-        std::string sbuffer(buffer);
+        std::string sbuffer = socket._getline(fp);
         sbuffer.erase(--sbuffer.end());
         if (sbuffer == "dump")
             dump();
