@@ -9,26 +9,17 @@
 #define COOK_HPP_
 
 #include "../include/include.hpp"
-#include "Pizza.hpp"
-#include "Thread.hpp"
-#include "AMutex.hpp"
-#include "ISafeQueue.hpp"
-#include "ScopedLock.hpp"
 
 namespace Plazza {
     class Cook {
         public:
-            Cook(ISafeQueue &, int);
+            Cook();
             ~Cook() = default;
 
             bool isCooking() const;
-            bool isRunning() const;
-            void updateThreads();
 
         private:
             bool _isCooking;
-            bool _isRunning;
-            std::shared_ptr<Thread> _thread;
     };
 }
 

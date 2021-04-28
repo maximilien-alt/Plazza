@@ -7,9 +7,10 @@
 
 #include "SafeQueue.hpp"
 
-void Plazza::SafeQueue::push(Plazza::Pizza value)
+void Plazza::SafeQueue::push(std::shared_ptr<Plazza::APizza> value)
 {
     std::lock_guard<std::mutex> guard(_queue_mutex);
+    std::cout << "Adding the " << value.get()->getPizzaId() << "th pizza from the " << value.get()->getOrderId() << "th order to the queue!" << std::endl;
     _queue.push(value);
 }
 
@@ -20,23 +21,13 @@ int Plazza::SafeQueue::getSize() const
     return _queue.size();
 }
 
-bool Plazza::SafeQueue::tryPop(Plazza::Pizza &value)
-{
-    std::lock_guard<std::mutex> guard(_queue_mutex);
-    if (_queue.empty())
-        return 0;
-    value = _queue.front();
-    _queue.pop();
-    return 1;
-}
-
-Plazza::Pizza Plazza::SafeQueue::pop()
+std::shared_ptr<Plazza::APizza> Plazza::SafeQueue::pop()
 {
     std::unique_lock<std::mutex> guard(_queue_mutex);
 
     while (_queue.empty())
         _cv.wait(guard);
-    Plazza::Pizza value = _queue.front();
+   std::shared_ptr<Plazza::APizza> value = _queue.front();
     _queue.pop();
     return value;
 }

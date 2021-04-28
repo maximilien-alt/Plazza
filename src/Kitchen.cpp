@@ -7,16 +7,17 @@
 
 #include "Kitchen.hpp"
 
-Plazza::Kitchen::Kitchen(const int &time, const int &cooks, const int &cooldown): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _queue(new SafeQueue())
+Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _queue(new SafeQueue)
 {
+    std::cout << "Creating "<< _cooksNumber << " cooks" << std::endl;
     for (int index = 0; index < _cooksNumber; index += 1) {
-        std::cout << "Creating thread" << std::endl;
-        _cooks.push_back(Plazza::Cook(*_queue, _timeMultiplier));
+        _cooks.push_back(Plazza::Cook());
     }
 }
 
 Plazza::Kitchen::~Kitchen()
 {
+    delete _queue;
 }
 
 int Plazza::Kitchen::howManyPizzasAreCooking() const
@@ -45,26 +46,37 @@ void Plazza::Kitchen::dump() const
     std::cout << "We also have " << _queue->getSize() << " pizzas waiting to be cooked in the queue!" << std::endl;
 }
 
-void Plazza::Kitchen::addPizzaToQueue(Plazza::Pizza &toAdd)
-{
-    std::cout << "Adding Pizza To Queue" << std::endl;
-    _queue->push(toAdd);
-    _queue->getConditionVariable().notify_all();
-}
-
 int Plazza::Kitchen::getFd() const
 {
     return _fd;
 }
 
+void splitLineIntoVector(std::string toParse, std::vector<std::string> &vector, std::string delimiter)
+{
+    size_t pos = 0;
+    std::string token;
+
+    while ((pos = toParse.find(delimiter)) != std::string::npos) {
+        token = toParse.substr(0, pos);
+        vector.push_back(token);
+        toParse.erase(0, pos + delimiter.length());
+    }
+    if (toParse.empty())
+        return;
+    vector.push_back(toParse);
+}
+
 void Plazza::Kitchen::takeOrder(std::string buffer)
 {
-    int spaceIndex = buffer.find(' ');
-    Plazza::PizzaType type = (Plazza::PizzaType)std::stoi(buffer.substr(0, spaceIndex));
-    Plazza::PizzaSize size = (Plazza::PizzaSize)std::stoi(buffer.substr(spaceIndex + 1, buffer.size() - spaceIndex - 1));
-    Plazza::Pizza *toCook = new Plazza::Pizza(type, size);
+    std::vector<std::string> vector;
+    Plazza::PizzaSize size;
 
-    addPizzaToQueue(*toCook);
+    splitLineIntoVector(buffer, vector, " ");
+    size << vector[1];
+    std::shared_ptr<Plazza::APizza> pizza = _factory.giveMeAPizza(vector[0], size, std::stoi(vector[2]), std::stoi(vector[3]), _timeMultiplier);
+
+    _queue->push(pizza);
+    _queue->getConditionVariable().notify_all();
 }
 
 void Plazza::Kitchen::setFd(int newFd)
@@ -86,6 +98,8 @@ void Plazza::Kitchen::startProcess(Socket &socket)
         sbuffer.erase(--sbuffer.end());
         if (sbuffer == "dump")
             dump();
+        else if (sbuffer == "howManyPizzasCanITake")
+            dprintf(_fd, "%d\n", howManyPizzasCanITake());
         else
             takeOrder(sbuffer);
     }

@@ -17,15 +17,14 @@ namespace Plazza {
             SafeQueue() = default;
             ~SafeQueue() = default;
 
-            void push(Pizza) final;
-            bool tryPop(Pizza &) final;
-            Pizza pop() final;
+            void push(std::shared_ptr<APizza>) final;
+            std::shared_ptr<APizza> pop() final;
 
             std::condition_variable &getConditionVariable() final;
             int getSize() const final;
 
         private:
-            std::queue<Pizza> _queue;
+            std::queue<std::shared_ptr<APizza>> _queue;
             std::mutex _queue_mutex;
             std::condition_variable _cv;
     };

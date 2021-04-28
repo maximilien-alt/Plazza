@@ -10,20 +10,20 @@
 
 #include "../include/include.hpp"
 #include "Cook.hpp"
-#include "SafeQueue.hpp"
 #include "Socket.hpp"
+#include "PizzaFactory.hpp"
+#include "SafeQueue.hpp"
 
 namespace Plazza {
     class Kitchen {
         public:
             Kitchen() = default;
-            Kitchen(const int &, const int &, const int &);
+            Kitchen(const float &, const int &, const int &);
             ~Kitchen();
 
             void dump() const;
             int howManyPizzasCanITake() const;
             int howManyPizzasAreCooking() const;
-            void addPizzaToQueue(Plazza::Pizza &);
             void takeOrder(std::string buffer);
             void startProcess(Socket &);
             int getFd() const;
@@ -32,10 +32,11 @@ namespace Plazza {
         private:
             int _cooksNumber;
             int _IngredientsCoolDown;
-            int _timeMultiplier;
+            float _timeMultiplier;
             int _fd;
-            std::vector<Plazza::Cook> _cooks;
+            std::vector<Cook> _cooks;
             mutable ISafeQueue *_queue;
+            PizzaFactory _factory;
     };
 }
 

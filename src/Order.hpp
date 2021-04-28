@@ -9,20 +9,25 @@
 #define ORDER_HPP_
 
 #include "../include/include.hpp"
-#include "Pizza.hpp"
+#include "Error.hpp"
+#include "PizzaFactory.hpp"
 
 namespace Plazza {
     class Order {
         public:
-            Order(const std::string &);
+            Order(const std::string &, int, float);
             ~Order();
 
             size_t getSize() const;
-            std::vector<Pizza> &getPizzas();
+            std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &getPizzas();
+            int getOrderId() const;
 
         private:
-            std::vector<Pizza> _pizzas;
+            PizzaFactory _factory;
+            std::unordered_map<int, std::shared_ptr<APizza>> _pizzas;
             size_t _size;
+            int _id;
+            float _time;
     };
 }
 

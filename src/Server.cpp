@@ -14,7 +14,7 @@ Plazza::Server::Server(const int &multiplier, const int &cooks, const int &coold
     } catch (const std::exception &e) {
         throw Error(e.what());
     }
-    _reception = new Plazza::Reception();
+    _reception = new Plazza::Reception(_timeMultiplier);
 }
 
 Plazza::Server::~Server()
@@ -37,18 +37,24 @@ void Plazza::Server::createKitchen()
     _kitchenManager.addKitchen(fd, newOne);
 }
 
-void Plazza::Server::OneOrder(Plazza::Order &order)
+void Plazza::Server::OneOrder(Plazza::Order order)
 {
-    std::vector<Plazza::Pizza> pizzas = order.getPizzas();
+    std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas = order.getPizzas();
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
         try {
             Plazza::Kitchen kitchen = _kitchenManager.at(index);
-            int maxPizzas = kitchen.howManyPizzasCanITake();
+            int kitchenFd = kitchen.getFd();
+            dprintf(kitchenFd, "howManyPizzasCanITake\n");
+            int maxPizzas = std::stoi(readFromKitchen(kitchenFd));
             for (int i = 0; i < maxPizzas; i += 1) {
                 if (pizzas.empty())
                     return;
-                dprintf(kitchen.getFd(), "%d %d\n", (int)pizzas[0].getType(), (int)pizzas[0].getSize());
+                Plazza::APizza *currentPizza = pizzas.at(0).get();
+                Plazza::PizzaSize size(currentPizza->getSize());
+                std::string strSize;
+                strSize << size;
+                dprintf(kitchenFd, "margarita %s %d %d\n", strSize.c_str(), order.getOrderId(), currentPizza->getPizzaId());
                 pizzas.erase(pizzas.begin());
             }
         } catch (const std::exception &e) {
@@ -67,16 +73,18 @@ void Plazza::Server::OneOrder(Plazza::Order &order)
 
 void Plazza::Server::parseOrders(std::vector<Plazza::Order> orders)
 {
-    for (auto &n: orders)
+    for (auto &n: orders) {
+        _storage.insert(std::make_pair(n.getOrderId(), n));
         OneOrder(n);
+    }
 }
 
-void Plazza::Server::readFromKitchen(int fd)
+std::string Plazza::Server::readFromKitchen(int fd)
 {
     FILE *fp = _socket._fdopen(fd, "r");
     std::string buffer = _socket._getline(fp);
-    std::cout << "recu: " + buffer + " depuis la kitchen avec le fd: " << fd << std::endl;
     fclose(fp);
+    return buffer;
 }
 
 void Plazza::Server::acceptOrRead(int i)

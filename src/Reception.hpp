@@ -9,19 +9,19 @@
 #define RECEPTION_HPP_
 
 #include "Order.hpp"
-#include "Kitchen.hpp"
-#include "KitchenManager.hpp"
 
 namespace Plazza {
     class Reception {
         public:
-            Reception();
+            Reception(const float time);
             ~Reception();
 
             std::vector<Order> getOrders(bool &);
 
         private:
             std::string _line;
+            float _timeMultiplier;
+            int _ids;
             std::vector<std::string> _currentOrders;
 
             void displayStatus();

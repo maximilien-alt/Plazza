@@ -9,7 +9,7 @@
 #define ISAFEQUEUE_HPP_
 
 #include "../include/include.hpp"
-#include "Pizza.hpp"
+#include "APizza.hpp"
 
 namespace Plazza {
     class Order;
@@ -17,9 +17,8 @@ namespace Plazza {
     class ISafeQueue {
         public:
             virtual ~ISafeQueue() = default;
-            virtual void push(Plazza::Pizza value) = 0;
-            virtual bool tryPop(Plazza::Pizza &value) = 0;
-            virtual Plazza::Pizza pop() = 0;
+            virtual void push(std::shared_ptr<Plazza::APizza> value) = 0;
+            virtual std::shared_ptr<Plazza::APizza> pop() = 0;
             virtual std::condition_variable &getConditionVariable() = 0;
             virtual int getSize() const = 0;
     };

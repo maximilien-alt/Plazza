@@ -7,7 +7,7 @@
 
 #include "Reception.hpp"
 
-Plazza::Reception::Reception()
+Plazza::Reception::Reception(const float time): _timeMultiplier(time), _ids(1)
 {
 }
 
@@ -41,7 +41,7 @@ std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status)
     for (auto &n: _currentOrders) {
         try {
             if (n != "status")
-                vector.push_back(Plazza::Order(n));
+                vector.push_back(Plazza::Order(n, _ids++, _timeMultiplier));
             else
                 status = true;
         } catch (const std::exception &e) {
