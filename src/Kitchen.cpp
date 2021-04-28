@@ -9,7 +9,7 @@
 
 Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _queue(new SafeQueue)
 {
-    std::cout << "Creating "<< _cooksNumber << " cooks" << std::endl;
+    std::cout << "New kitchen created with " << _cooksNumber << " cooks!" << std::endl;
     for (int index = 0; index < _cooksNumber; index += 1) {
         _cooks.push_back(Plazza::Cook());
     }
@@ -17,7 +17,7 @@ Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldow
 
 Plazza::Kitchen::~Kitchen()
 {
-    delete _queue;
+    //delete _queue;
 }
 
 int Plazza::Kitchen::howManyPizzasAreCooking() const
@@ -94,14 +94,16 @@ void Plazza::Kitchen::startProcess(Socket &socket)
     while (1) {
         if (socket._select() < 0)
             continue;
-        std::string sbuffer = socket._getline(fp);
-        sbuffer.erase(--sbuffer.end());
-        if (sbuffer == "dump")
-            dump();
-        else if (sbuffer == "howManyPizzasCanITake")
-            dprintf(_fd, "%d\n", howManyPizzasCanITake());
-        else
-            takeOrder(sbuffer);
+        while (1) {
+            std::string sbuffer = socket._getline(fp);
+            sbuffer.erase(--sbuffer.end());
+            if (sbuffer == "dump")
+                dump();
+            else if (sbuffer == "howManyPizzasCanITake")
+                dprintf(_fd, "%d\n", howManyPizzasCanITake());
+            else
+                takeOrder(sbuffer);
+        }
     }
     fclose(fp);
 }

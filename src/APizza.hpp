@@ -36,6 +36,14 @@ namespace Plazza
         Null = 32
     };
 
+    enum PizzaType
+    {
+        margarita,
+        regina,
+        americana,
+        fantasia
+    };
+
     class APizza {
         public:
             APizza(const PizzaSize &, const int &, const int &, const float &, const Ingredients &, const Ingredients &, const Ingredients &, const Ingredients & = Nothing, const Ingredients & = Nothing);
@@ -47,6 +55,7 @@ namespace Plazza
             float getBakedTime() const;
             bool isCooked() const;
             PizzaSize getSize() const;
+            PizzaType getType() const;
 
             void setCookingStatus(bool);
 
@@ -57,10 +66,14 @@ namespace Plazza
             int _pizzaId;
             float _bakedTime;
             bool _isCooked = false;
+            PizzaType _type;
     };
 }
 
 Plazza::PizzaSize& operator<<(Plazza::PizzaSize &lhs, const std::string &rhs);
 std::string& operator<<(std::string &lhs, Plazza::PizzaSize &rhs);
+Plazza::PizzaType& operator<<(Plazza::PizzaType &lhs, const std::string &rhs);
+std::string& operator<<(std::string &lhs, Plazza::PizzaType &rhs);
+std::ostream &operator<<(std::ostream &s, const Plazza::APizza &rhs);
 
 #endif /* !APIZZA_HPP_ */

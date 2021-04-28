@@ -13,7 +13,10 @@
 namespace Plazza {
     class Margarita: public APizza {
         public:
-            Margarita(const PizzaSize &size, const int &orderId, const int &pizzaId, const float timeMultiplier): APizza(size, orderId, pizzaId, timeMultiplier, Ingredients::Doe, Ingredients::Tomato, Ingredients::Gruyere) {};
+            Margarita(const PizzaSize &size, const int &orderId, const int &pizzaId, const float timeMultiplier): APizza(size, orderId, pizzaId, timeMultiplier, Ingredients::Doe, Ingredients::Tomato, Ingredients::Gruyere)
+            {
+                _type = Plazza::PizzaType::margarita;
+            };
             ~Margarita() = default;
     };
 }

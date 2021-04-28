@@ -37,9 +37,21 @@ void Plazza::Server::createKitchen()
     _kitchenManager.addKitchen(fd, newOne);
 }
 
+Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas, int position)
+{
+    int index = 0;
+
+    for (auto &n: pizzas) {
+        if (index == position)
+            return n.second.get();
+        index += 1;
+    }
+    return nullptr;
+}
+
 void Plazza::Server::OneOrder(Plazza::Order order)
 {
-    std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas = order.getPizzas();
+    std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &pizzas = order.getPizzas();
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
         try {
@@ -50,11 +62,15 @@ void Plazza::Server::OneOrder(Plazza::Order order)
             for (int i = 0; i < maxPizzas; i += 1) {
                 if (pizzas.empty())
                     return;
-                Plazza::APizza *currentPizza = pizzas.at(0).get();
+                Plazza::APizza *currentPizza = getPizzaFromPosition(pizzas, 0);
                 Plazza::PizzaSize size(currentPizza->getSize());
                 std::string strSize;
                 strSize << size;
-                dprintf(kitchenFd, "margarita %s %d %d\n", strSize.c_str(), order.getOrderId(), currentPizza->getPizzaId());
+                Plazza::PizzaType type(currentPizza->getType());
+                std::string strType;
+                strType << type;
+                std::cout << "sending this pizza: " << *currentPizza;
+                dprintf(kitchenFd, "%s %s %d %d\n", strType.c_str(), strSize.c_str(), order.getOrderId(), currentPizza->getPizzaId());
                 pizzas.erase(pizzas.begin());
             }
         } catch (const std::exception &e) {
@@ -83,7 +99,7 @@ std::string Plazza::Server::readFromKitchen(int fd)
 {
     FILE *fp = _socket._fdopen(fd, "r");
     std::string buffer = _socket._getline(fp);
-    fclose(fp);
+    //fclose(fp);
     return buffer;
 }
 

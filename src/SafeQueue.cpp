@@ -10,7 +10,7 @@
 void Plazza::SafeQueue::push(std::shared_ptr<Plazza::APizza> value)
 {
     std::lock_guard<std::mutex> guard(_queue_mutex);
-    std::cout << "Adding the " << value.get()->getPizzaId() << "th pizza from the " << value.get()->getOrderId() << "th order to the queue!" << std::endl;
+    std::cout << "---" << std::endl << "adding pizza to Queue:" << std::endl << *value.get() << "---" << std::endl;
     _queue.push(value);
 }
 

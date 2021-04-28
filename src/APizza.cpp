@@ -58,6 +58,11 @@ void Plazza::APizza::setCookingStatus(bool isCooked)
     _isCooked = isCooked;
 }
 
+Plazza::PizzaType Plazza::APizza::getType() const
+{
+    return _type;
+}
+
 Plazza::PizzaSize& operator<<(Plazza::PizzaSize &lhs, const std::string &rhs)
 {
     if (rhs == "S")
@@ -86,4 +91,43 @@ std::string& operator<<(std::string &lhs, Plazza::PizzaSize &rhs)
     else if (rhs == Plazza::PizzaSize::XXL)
         lhs = "XXL";
     return lhs;
+}
+
+Plazza::PizzaType& operator<<(Plazza::PizzaType &lhs, const std::string &rhs)
+{
+    if (rhs == "margarita")
+        lhs = Plazza::PizzaType::margarita;
+    else if (rhs == "regina")
+        lhs = Plazza::PizzaType::regina;
+    else if (rhs == "americana")
+        lhs = Plazza::PizzaType::americana;
+    else if (rhs == "fantasia")
+        lhs = Plazza::PizzaType::fantasia;
+    return lhs;
+}
+
+std::string& operator<<(std::string &lhs, Plazza::PizzaType &rhs)
+{
+    if (rhs == Plazza::PizzaType::margarita)
+        lhs = "margarita";
+    else if (rhs == Plazza::PizzaType::regina)
+        lhs = "regina";
+    else if (rhs == Plazza::PizzaType::americana)
+        lhs = "americana";
+    else if (rhs == Plazza::PizzaType::fantasia)
+        lhs = "fantasia";
+    return lhs;
+}
+
+std::ostream &operator<<(std::ostream &s, const Plazza::APizza &rhs)
+{
+    std::string type;
+    Plazza::PizzaType ptype = rhs.getType();
+    std::string size;
+    Plazza::PizzaSize psize = rhs.getSize();
+    type << ptype;
+    size << psize;
+    s << "It's the " << rhs.getPizzaId() << "th pizza from the " << rhs.getOrderId() << "th order!" << std::endl;
+    s << "That's a " << type << " of size " << size << "!" << std::endl;
+    return s;
 }

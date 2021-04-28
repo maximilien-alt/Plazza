@@ -45,6 +45,7 @@ std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status)
             else
                 status = true;
         } catch (const std::exception &e) {
+            _ids -= 1;
             continue;
         }
     }
