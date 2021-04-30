@@ -58,6 +58,36 @@ void Plazza::APizza::setCookingStatus(bool isCooked)
     _isCooked = isCooked;
 }
 
+void Plazza::APizza::setIngredients(std::vector<Ingredients> ingredients)
+{
+    _ingredients = ingredients;
+}
+
+void Plazza::APizza::setOrderId(int id)
+{
+    _orderId = id;
+}
+
+void Plazza::APizza::setPizzaId(int id)
+{
+    _pizzaId = id;
+}
+
+void Plazza::APizza::setBakedTime(float time)
+{
+    _bakedTime = time;
+}
+
+void Plazza::APizza::setSize(PizzaSize size)
+{
+    _size = size;
+}
+
+void Plazza::APizza::setType(PizzaType type)
+{
+    _type = type;
+}
+
 Plazza::PizzaType Plazza::APizza::getType() const
 {
     return _type;

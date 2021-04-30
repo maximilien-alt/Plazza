@@ -8,7 +8,7 @@
 #ifndef RECEPTION_HPP_
 #define RECEPTION_HPP_
 
-#include "Order.hpp"
+#include "../Order.hpp"
 
 namespace Plazza {
     class Reception {

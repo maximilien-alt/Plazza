@@ -8,7 +8,7 @@
 #ifndef COOK_HPP_
 #define COOK_HPP_
 
-#include "../include/include.hpp"
+#include "../../include/include.hpp"
 
 namespace Plazza {
     class Cook {

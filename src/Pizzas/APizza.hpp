@@ -8,7 +8,7 @@
 #ifndef APIZZA_HPP_
 #define APIZZA_HPP_
 
-#include "../include/include.hpp"
+#include "../../include/include.hpp"
 
 namespace Plazza
 {
@@ -46,8 +46,9 @@ namespace Plazza
 
     class APizza {
         public:
+            APizza() = default;
             APizza(const PizzaSize &, const int &, const int &, const float &, const Ingredients &, const Ingredients &, const Ingredients &, const Ingredients & = Nothing, const Ingredients & = Nothing);
-            ~APizza();
+            virtual ~APizza();
 
             std::vector<Ingredients> getIngredients() const;
             int getOrderId() const;
@@ -58,6 +59,12 @@ namespace Plazza
             PizzaType getType() const;
 
             void setCookingStatus(bool);
+            void setIngredients(std::vector<Ingredients>);
+            void setOrderId(int);
+            void setPizzaId(int);
+            void setBakedTime(float);
+            void setSize(PizzaSize);
+            void setType(PizzaType);
 
         protected:
             PizzaSize _size;

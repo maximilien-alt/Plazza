@@ -9,7 +9,6 @@
 #define SCOPEDLOCK_HPP_
 
 #include "AMutex.hpp"
-#include "../include/include.hpp"
 
 namespace Plazza {
     class ScopedLock {

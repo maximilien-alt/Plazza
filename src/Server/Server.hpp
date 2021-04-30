@@ -8,8 +8,8 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
-#include "../include/include.hpp"
-#include "KitchenManager.hpp"
+#include "../../include/include.hpp"
+#include "../Kitchens/KitchenManager.hpp"
 #include "Socket.hpp"
 #include "Reception.hpp"
 
@@ -27,13 +27,15 @@ namespace Plazza {
             int _ingredientsCoolDown;
             Socket _socket;
             Reception *_reception;
+            std::unordered_map<int, Order> _storage;
             KitchenManager _kitchenManager;
             void acceptOrRead(int);
             void createKitchen();
             void parseOrders(std::vector<Plazza::Order> orders);
             std::string readFromKitchen(int fd);
             void OneOrder(Plazza::Order order);
-            std::unordered_map<int, Order> _storage;
+            void sendMessage(int fd, std::string content);
+            void sendPizza(int fd, APizza *pizza);
     };
 }
 

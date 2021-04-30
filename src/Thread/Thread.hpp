@@ -8,7 +8,7 @@
 #ifndef THREAD_HPP_
 #define THREAD_HPP_
 
-#include "../include/include.hpp"
+#include "../Pizzas/APizza.hpp"
 
 namespace Plazza
 {
@@ -17,26 +17,25 @@ namespace Plazza
     public:
         enum STATUS
         {
+            NOTRUNNING,
             RUNNING,
             DEAD
         };
 
-        template <class Fn, class... Args>
-        explicit Thread (Fn&& fn, Args&&... args): _thread(fn, args...), _status(RUNNING), _created(1) {
-        };
-
+        Thread();
         ~Thread();
 
-        void joinThreads();
-
-        void cancel();
-
-        STATUS getCurrentStatus() const;
+        void kill();
+        void join();
+        void run(std::shared_ptr<Plazza::APizza> pizza);
+        STATUS getStatus() const;
 
     private:
-        std::thread _thread;
+        Plazza::APizza *_pizza;
+        pthread_t _thread;
         STATUS _status;
-        bool _created;
+
+        static void *execute(void *);
     };
 }
 

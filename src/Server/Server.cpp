@@ -49,6 +49,23 @@ Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Pla
     return nullptr;
 }
 
+void Plazza::Server::sendMessage(int fd, std::string content)
+{
+    int protocol = 1;
+
+    write(fd, &protocol, 4);
+    dprintf(fd, "%s\n", content.c_str());
+}
+
+void Plazza::Server::sendPizza(int fd, Plazza::APizza *pizza)
+{
+    int protocol = 2;
+
+    write(fd, &protocol, 4);
+    dprintf(fd, "%s\n", PizzaFactory::pack(*pizza).c_str());
+    std::cout <<"sending: " << *pizza  << std::endl;
+}
+
 void Plazza::Server::OneOrder(Plazza::Order order)
 {
     std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &pizzas = order.getPizzas();
@@ -57,20 +74,13 @@ void Plazza::Server::OneOrder(Plazza::Order order)
         try {
             Plazza::Kitchen kitchen = _kitchenManager.at(index);
             int kitchenFd = kitchen.getFd();
-            dprintf(kitchenFd, "howManyPizzasCanITake\n");
+            sendMessage(kitchenFd, "howManyPizzasCanITake");
             int maxPizzas = std::stoi(readFromKitchen(kitchenFd));
             for (int i = 0; i < maxPizzas; i += 1) {
                 if (pizzas.empty())
                     return;
                 Plazza::APizza *currentPizza = getPizzaFromPosition(pizzas, 0);
-                Plazza::PizzaSize size(currentPizza->getSize());
-                std::string strSize;
-                strSize << size;
-                Plazza::PizzaType type(currentPizza->getType());
-                std::string strType;
-                strType << type;
-                std::cout << "sending this pizza: " << *currentPizza;
-                dprintf(kitchenFd, "%s %s %d %d\n", strType.c_str(), strSize.c_str(), order.getOrderId(), currentPizza->getPizzaId());
+                sendPizza(kitchenFd, currentPizza);
                 pizzas.erase(pizzas.begin());
             }
         } catch (const std::exception &e) {
@@ -97,10 +107,14 @@ void Plazza::Server::parseOrders(std::vector<Plazza::Order> orders)
 
 std::string Plazza::Server::readFromKitchen(int fd)
 {
-    FILE *fp = _socket._fdopen(fd, "r");
-    std::string buffer = _socket._getline(fp);
-    //fclose(fp);
-    return buffer;
+    try {
+        FILE *fp = _socket._fdopen(fd, "r");
+        std::string buffer = _socket._getline(fp);
+        return buffer;
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return std::string("");
+    }
 }
 
 void Plazza::Server::acceptOrRead(int i)

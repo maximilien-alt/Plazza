@@ -8,8 +8,8 @@
 #ifndef SOCKET_HPP_
 #define SOCKET_HPP_
 
-#include "../include/include.hpp"
-#include "Error.hpp"
+#include "../../include/include.hpp"
+#include "../Error.hpp"
 
 namespace Plazza {
     class Socket {

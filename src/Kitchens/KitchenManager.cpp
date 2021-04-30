@@ -23,7 +23,7 @@ bool Plazza::KitchenManager::empty() const
 void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen)
 {
     kitchen.setFd(fd);
-    _kitchens[fd] = kitchen;
+    _kitchens.insert(std::make_pair(fd,kitchen));
 }
 
 Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown)
@@ -34,10 +34,11 @@ Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int c
 void Plazza::KitchenManager::dump()
 {
     int index = 1;
+    int protocol = 1;
 
-    std::cout << "DUMP KITCHEN MANAGER!" << std::endl;
     for (auto &n: _kitchens) {
         std::cout << "  Kitchen number " << index << ":" << std::endl;
+        write(n.first, &protocol, 4);
         dprintf(n.first, "dump\n");
         index += 1;
     }

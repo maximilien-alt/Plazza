@@ -8,9 +8,8 @@
 #ifndef ORDER_HPP_
 #define ORDER_HPP_
 
-#include "../include/include.hpp"
 #include "Error.hpp"
-#include "PizzaFactory.hpp"
+#include "Pizzas/PizzaFactory.hpp"
 
 namespace Plazza {
     class Order {

@@ -8,11 +8,12 @@
 #ifndef KITCHEN_HPP_
 #define KITCHEN_HPP_
 
-#include "../include/include.hpp"
+#include "../../include/include.hpp"
 #include "Cook.hpp"
-#include "Socket.hpp"
-#include "PizzaFactory.hpp"
-#include "SafeQueue.hpp"
+#include "../Server/Socket.hpp"
+#include "../Pizzas/PizzaFactory.hpp"
+#include "../Thread/ThreadPool.hpp"
+#include "../Thread/ScopedLock.hpp"
 
 namespace Plazza {
     class Kitchen {
@@ -24,7 +25,8 @@ namespace Plazza {
             void dump() const;
             int howManyPizzasCanITake() const;
             int howManyPizzasAreCooking() const;
-            void takeOrder(std::string buffer);
+            void takeOrder(Socket &socket, FILE *);
+            void parseQuestion(Socket &socket, FILE *fp);
             void startProcess(Socket &);
             int getFd() const;
             void setFd(int newFd);
@@ -34,9 +36,7 @@ namespace Plazza {
             int _IngredientsCoolDown;
             float _timeMultiplier;
             int _fd;
-            std::vector<Cook> _cooks;
-            mutable ISafeQueue *_queue;
-            PizzaFactory _factory;
+            ThreadPool _cooks;
     };
 }
 

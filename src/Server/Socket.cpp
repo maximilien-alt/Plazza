@@ -99,7 +99,8 @@ std::string Plazza::Socket::_getline(FILE *fp)
     size_t size = 0;
     char *buffer = NULL;
 
-    getline(&buffer, &size, fp);
+    if (getline(&buffer, &size, fp) == -1)
+        throw Error("[GetLine]: Failed!");
     std::string result(buffer);
     free (buffer);
     return result;

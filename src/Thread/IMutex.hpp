@@ -8,7 +8,8 @@
 #ifndef IMUTEX_HPP_
 #define IMUTEX_HPP_
 
-#include "../include/include.hpp"
+#include "../../include/include.hpp"
+
 
 namespace Plazza {
     class IMutex

@@ -8,7 +8,7 @@
 #ifndef KITCHENMANAGER_HPP_
 #define KITCHENMANAGER_HPP_
 
-#include "../include/include.hpp"
+#include "../../include/include.hpp"
 #include "Kitchen.hpp"
 
 namespace Plazza {

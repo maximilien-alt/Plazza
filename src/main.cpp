@@ -6,8 +6,8 @@
 */
 
 #include "../include/include.hpp"
-#include "Reception.hpp"
-#include "Server.hpp"
+#include "Server/Reception.hpp"
+#include "Server/Server.hpp"
 
 bool is_digit(const char value)
 {

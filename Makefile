@@ -8,8 +8,12 @@
 NAME	=	 plazza	
 
 SRC	=	$(wildcard src/*.cpp)	\
+		$(wildcard src/Kitchens/*.cpp)	\
+		$(wildcard src/Pizzas/*.cpp)	\
+		$(wildcard src/Thread/*.cpp)	\
+		$(wildcard src/Server/*.cpp)
 
-SRC_FLAGS	=	-W -Wall -Wextra -lpthread -g3
+SRC_FLAGS	=	-W -Wall -Wextra -lpthread -g3 -Wno-class-memaccess
 
 OBJ_SRC	=	$(SRC:.cpp=.o)
 
