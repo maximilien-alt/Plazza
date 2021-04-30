@@ -34,7 +34,7 @@ void Plazza::Server::createKitchen()
     }
     int fd = _socket._accept();
     _socket.setActiveFd(fd);
-    _kitchenManager.addKitchen(fd, newOne);
+    _kitchenManager.addKitchen(fd, newOne, 2 * _cooksPerKitchen);
 }
 
 Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas, int position)
@@ -49,38 +49,19 @@ Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Pla
     return nullptr;
 }
 
-void Plazza::Server::sendMessage(int fd, std::string content)
-{
-    int protocol = 1;
-
-    write(fd, &protocol, 4);
-    dprintf(fd, "%s\n", content.c_str());
-}
-
-void Plazza::Server::sendPizza(int fd, Plazza::APizza *pizza)
-{
-    int protocol = 2;
-
-    write(fd, &protocol, 4);
-    dprintf(fd, "%s\n", PizzaFactory::pack(*pizza).c_str());
-    std::cout <<"sending: " << *pizza  << std::endl;
-}
-
 void Plazza::Server::OneOrder(Plazza::Order order)
 {
     std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &pizzas = order.getPizzas();
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
         try {
-            Plazza::Kitchen kitchen = _kitchenManager.at(index);
-            int kitchenFd = kitchen.getFd();
-            sendMessage(kitchenFd, "howManyPizzasCanITake");
-            int maxPizzas = std::stoi(readFromKitchen(kitchenFd));
-            for (int i = 0; i < maxPizzas; i += 1) {
+            std::pair<std::shared_ptr<Plazza::Kitchen>, int> pair = _kitchenManager.at(index);
+            int kitchenFd = pair.first->getFd();
+            for (int i = 0; i < pair.second; i += 1) {
                 if (pizzas.empty())
                     return;
                 Plazza::APizza *currentPizza = getPizzaFromPosition(pizzas, 0);
-                sendPizza(kitchenFd, currentPizza);
+                dprintf(kitchenFd, "%s\n", PizzaFactory::pack(*currentPizza).c_str());
                 pizzas.erase(pizzas.begin());
             }
         } catch (const std::exception &e) {
@@ -110,6 +91,8 @@ std::string Plazza::Server::readFromKitchen(int fd)
     try {
         FILE *fp = _socket._fdopen(fd, "r");
         std::string buffer = _socket._getline(fp);
+        if (buffer == "kill")
+            _kitchenManager.deleteKitchenFromFd(fd);
         return buffer;
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;

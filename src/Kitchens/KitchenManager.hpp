@@ -18,14 +18,16 @@ namespace Plazza {
             ~KitchenManager();
 
             bool empty() const;
-            void addKitchen(int, Kitchen &);
+            void addKitchen(int fd, Kitchen &kitchen, int maxPizzas);
             Kitchen giveMeKitchen(int, int, int);
             void dump();
             size_t size() const;
-            Kitchen &at(int pos);
+            std::pair<std::shared_ptr<Plazza::Kitchen>, int> at(int pos);
+            void deleteKitchenFromFd(int fd);
+            void updateMaxPizzasFromFd(int fd, int state);
 
         private:
-            std::unordered_map<int, Kitchen> _kitchens;
+            std::unordered_map<std::shared_ptr<Kitchen>, int> _kitchens;
     };
 }
 

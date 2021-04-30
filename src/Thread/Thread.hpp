@@ -9,6 +9,8 @@
 #define THREAD_HPP_
 
 #include "../Pizzas/APizza.hpp"
+#include "../Kitchens/Fridge.hpp"
+#include "SafeQueue.hpp"
 
 namespace Plazza
 {
@@ -27,11 +29,11 @@ namespace Plazza
 
         void kill();
         void join();
-        void run(std::shared_ptr<Plazza::APizza> pizza);
+        void run(std::shared_ptr<working_item_t>);
         STATUS getStatus() const;
 
     private:
-        Plazza::APizza *_pizza;
+        std::shared_ptr<working_item_t> _item;
         pthread_t _thread;
         STATUS _status;
 

@@ -9,7 +9,6 @@
 #define THREADPOOL_HPP_
 
 #include "Thread.hpp"
-#include "SafeQueue.hpp"
 
 namespace Plazza {
     class ThreadPool {
@@ -17,7 +16,7 @@ namespace Plazza {
             ThreadPool(const int &);
             ~ThreadPool();
 
-            void addPizza(APizza &);
+            void addItem(working_item_t &);
             void run();
             size_t getQueueSize() const;
             std::vector<Plazza::Thread::STATUS> getThreadsStatus() const;
@@ -25,7 +24,7 @@ namespace Plazza {
         private:
             size_t _threadsNumber;
             std::vector<Thread> _threads;
-            SafeQueue<APizza> _safeQueue;
+            SafeQueue<working_item_t> _safeQueue;
 
     };
 }

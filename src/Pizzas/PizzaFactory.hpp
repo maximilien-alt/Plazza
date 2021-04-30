@@ -64,6 +64,7 @@ namespace Plazza
                 return Plazza::Americana(size, std::stoi(vector[2]), std::stoi(vector[3]), time);
             if (vector[0] == "fantasia")
                 return Plazza::Fantasia(size, std::stoi(vector[2]), std::stoi(vector[3]), time);
+            return Plazza::APizza();
         }
 
         std::shared_ptr<APizza> giveMeAPizza(std::string field, PizzaSize size, int orderId, int pizzaId, float time)

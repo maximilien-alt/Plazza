@@ -20,10 +20,10 @@ bool Plazza::KitchenManager::empty() const
     return _kitchens.empty();
 }
 
-void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen)
+void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen, int maxPizzas)
 {
     kitchen.setFd(fd);
-    _kitchens.insert(std::make_pair(fd,kitchen));
+    _kitchens.insert(std::make_pair(std::make_shared<Plazza::Kitchen>(kitchen), maxPizzas));
 }
 
 Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown)
@@ -34,12 +34,10 @@ Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int c
 void Plazza::KitchenManager::dump()
 {
     int index = 1;
-    int protocol = 1;
 
     for (auto &n: _kitchens) {
         std::cout << "  Kitchen number " << index << ":" << std::endl;
-        write(n.first, &protocol, 4);
-        dprintf(n.first, "dump\n");
+        dprintf(n.first->getFd(), "dump\n");
         index += 1;
     }
 }
@@ -49,14 +47,33 @@ size_t Plazza::KitchenManager::size() const
     return _kitchens.size();
 }
 
-Plazza::Kitchen &Plazza::KitchenManager::at(int pos)
+std::pair<std::shared_ptr<Plazza::Kitchen>, int> Plazza::KitchenManager::at(int pos)
 {
     int index = 0;
+    std::pair<std::shared_ptr<Plazza::Kitchen>, int> pair; 
 
-    for (auto &n: _kitchens) {
-        if (index == pos)
-            return n.second;
-        index += 1;
-    }
-    throw Error("[KitchenManager]: No kitchen found with this index! ('" + std::to_string(pos) + "')");
+    for (auto &n: _kitchens)
+        if (index++ == pos) {
+            pair = n;
+            break;
+        }
+    return pair;
+}
+
+void Plazza::KitchenManager::deleteKitchenFromFd(int fd)
+{
+    for (std::unordered_map<std::shared_ptr<Plazza::Kitchen>, int>::iterator it = _kitchens.begin(); it != _kitchens.end(); ++it)
+        if ((*it).first->getFd() == fd) {
+            _kitchens.erase(it);
+            return;
+        }
+}
+
+void Plazza::KitchenManager::updateMaxPizzasFromFd(int fd, int state)
+{
+    for (auto &n: _kitchens)
+        if (n.first->getFd() == fd) {
+            n.second += state;
+            return;
+        }
 }

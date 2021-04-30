@@ -11,6 +11,12 @@
 #include "../../include/include.hpp"
 
 namespace Plazza {
+    typedef struct working_item_s
+    {
+        Fridge *fridge;
+        APizza pizza;
+    } working_item_t;
+
     template<typename T>
     class SafeQueue {
         public:
@@ -27,7 +33,6 @@ namespace Plazza {
             void push(T value)
             {
                 std::lock_guard<std::mutex> lock(_mutex);
-                std::cout << "pushing: " << value << std::endl;
                 _queue.push(value);
                 _cond_var.notify_one();
             };
@@ -52,7 +57,7 @@ namespace Plazza {
             bool tryPop(T &value)
             {
                 std::unique_lock<std::mutex> lock(_mutex);
-                if (!_queue.empty())
+                if (_queue.empty())
                     return false;
                 value = _queue.front();
                 _queue.pop();
@@ -62,7 +67,7 @@ namespace Plazza {
             std::shared_ptr<T> tryPop()
             {
                 std::unique_lock<std::mutex> lock(_mutex);
-                if (!_queue.empty())
+                if (_queue.empty())
                     return nullptr;
                 std::shared_ptr<T> result = std::make_shared<T>(_queue.front());
                 _queue.pop();

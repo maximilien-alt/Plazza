@@ -19,23 +19,28 @@ namespace Plazza {
     class Kitchen {
         public:
             Kitchen() = default;
+            //Kitchen(const Kitchen &)=;
             Kitchen(const float &, const int &, const int &);
             ~Kitchen();
 
             void dump() const;
             int howManyPizzasCanITake() const;
             int howManyPizzasAreCooking() const;
-            void takeOrder(Socket &socket, FILE *);
+            void takeOrder(std::string);
             void parseQuestion(Socket &socket, FILE *fp);
             void startProcess(Socket &);
             int getFd() const;
             void setFd(int newFd);
+            bool operator==(const Kitchen& r);
+
+            void selfKill();
 
         private:
             int _cooksNumber;
             int _IngredientsCoolDown;
             float _timeMultiplier;
             int _fd;
+            working_item_t _item;
             ThreadPool _cooks;
     };
 }

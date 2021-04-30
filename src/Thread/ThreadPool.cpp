@@ -17,7 +17,7 @@ Plazza::ThreadPool::~ThreadPool()
 {
 }
 
-void Plazza::ThreadPool::addPizza(APizza &toAdd)
+void Plazza::ThreadPool::addItem(Plazza::working_item_t &toAdd)
 {
     _safeQueue.push(toAdd);
 }
@@ -25,16 +25,15 @@ void Plazza::ThreadPool::addPizza(APizza &toAdd)
 void Plazza::ThreadPool::run()
 {
     for (auto &n: _threads) {
-        if (_safeQueue.empty())
+        if (_safeQueue.empty()) {
             break;
+        }
         if (n.getStatus() == Plazza::Thread::NOTRUNNING) {
-            auto pizza = _safeQueue.tryPop();
-            if (pizza) {
-                n.run(pizza);
-                continue;
-            }
-            auto wpizza = _safeQueue.waitAndPop();
-            n.run(wpizza);
+            auto item = _safeQueue.tryPop();
+            if (item && item.get()->fridge->canCook(item.get()->pizza)) {
+                n.run(item);
+            } else
+                _safeQueue.push(*item.get());
         }
     }
 }

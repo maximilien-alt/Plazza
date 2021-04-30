@@ -34,8 +34,6 @@ namespace Plazza {
             void parseOrders(std::vector<Plazza::Order> orders);
             std::string readFromKitchen(int fd);
             void OneOrder(Plazza::Order order);
-            void sendMessage(int fd, std::string content);
-            void sendPizza(int fd, APizza *pizza);
     };
 }
 
