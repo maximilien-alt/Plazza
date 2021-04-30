@@ -52,3 +52,17 @@ size_t Plazza::Order::getSize() const
 {
     return _size;
 }
+
+bool Plazza::Order::pizzaIsCooked(int id)
+{
+    bool orderClear = true;
+
+    for (auto &n: _pizzas) {
+        if (n.second->getPizzaId() == id) {
+            n.second->setCookingStatus(true);
+        }
+        if (!n.second->isCooked())
+            orderClear = false;
+    }
+    return orderClear;
+}

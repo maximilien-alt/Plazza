@@ -7,7 +7,7 @@
 
 #include "Server.hpp"
 
-Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown)
+Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown), log("log.txt")
 {
     try {
         _socket.createServerSocket();
@@ -19,6 +19,7 @@ Plazza::Server::Server(const int &multiplier, const int &cooks, const int &coold
 
 Plazza::Server::~Server()
 {
+    log.close();
     delete _reception;
 }
 
@@ -52,17 +53,21 @@ Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Pla
 void Plazza::Server::OneOrder(Plazza::Order order)
 {
     std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &pizzas = order.getPizzas();
+    int protocol = 2;
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
         try {
-            std::pair<std::shared_ptr<Plazza::Kitchen>, int> pair = _kitchenManager.at(index);
+            std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &pair = _kitchenManager.at(index);
             int kitchenFd = pair.first->getFd();
-            for (int i = 0; i < pair.second; i += 1) {
+            int maxPizzas = pair.second;
+            for (int i = 0; i < maxPizzas; i += 1) {
                 if (pizzas.empty())
                     return;
                 Plazza::APizza *currentPizza = getPizzaFromPosition(pizzas, 0);
+                write(kitchenFd, &protocol, 4);
                 dprintf(kitchenFd, "%s\n", PizzaFactory::pack(*currentPizza).c_str());
                 pizzas.erase(pizzas.begin());
+                pair.second -= 1;
             }
         } catch (const std::exception &e) {
             std::cerr << e.what();
@@ -86,18 +91,47 @@ void Plazza::Server::parseOrders(std::vector<Plazza::Order> orders)
     }
 }
 
-std::string Plazza::Server::readFromKitchen(int fd)
+void Plazza::Server::writeOrderToLog(Plazza::Order order)
 {
-    try {
-        FILE *fp = _socket._fdopen(fd, "r");
-        std::string buffer = _socket._getline(fp);
-        if (buffer == "kill")
-            _kitchenManager.deleteKitchenFromFd(fd);
-        return buffer;
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
-        return std::string("");
+    log << "-> Order Number " << order.getOrderId() << " (containing " << order.getSize() << " pizzas):" << std::endl;
+    std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas = order.getPizzas();
+
+    for (auto &n: pizzas)
+        log << *n.second.get();
+}
+
+void Plazza::Server::updateCookedPizzaStatus(std::string buffer, int fd)
+{
+    std::vector<std::string> vector = Plazza::Kitchen::fromIds(buffer);
+    int protocol = 1;
+
+    std::unordered_map<int, Plazza::Order>::iterator it = _storage.find(std::stoi(vector[0]));
+    if (it != _storage.end()) {
+        write(fd, &protocol, 4);
+        dprintf(fd, "ping\n");
+        if ((*it).second.pizzaIsCooked(std::stoi(vector[1]))) {
+            writeOrderToLog((*it).second);
+            _storage.erase(it);
+        }
     }
+}
+
+void Plazza::Server::readFromKitchen(int fd)
+{
+    FILE *fp = _socket._fdopen(fd, "r");
+
+    //while (1) {
+        try {
+            std::string buffer = _socket._getline(fp);
+            if (buffer == "kill") {
+                _socket.clearFd(fd);
+                _kitchenManager.deleteKitchenFromFd(fd);
+            } else
+                updateCookedPizzaStatus(buffer, fd);
+        } catch (const std::exception &e) {
+            return;
+        }
+    //}
 }
 
 void Plazza::Server::acceptOrRead(int i)

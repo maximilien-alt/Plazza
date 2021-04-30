@@ -38,6 +38,14 @@ void Plazza::ThreadPool::run()
     }
 }
 
+bool Plazza::ThreadPool::areTheyWorking()
+{
+    for (auto &n: _threads)
+        if (n.getStatus() == Plazza::Thread::RUNNING)
+            return true;
+    return !(_safeQueue.getSize() == 0);
+}
+
 size_t Plazza::ThreadPool::getQueueSize() const
 {
     return _safeQueue.getSize();

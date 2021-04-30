@@ -157,7 +157,6 @@ std::ostream &operator<<(std::ostream &s, const Plazza::APizza &rhs)
     Plazza::PizzaSize psize = rhs.getSize();
     type << ptype;
     size << psize;
-    s << "It's the " << rhs.getPizzaId() << "th pizza from the " << rhs.getOrderId() << "th order!" << std::endl;
-    s << "That's a " << type << " of size " << size << "!" << std::endl;
+    s << "Pizza Number " << rhs.getPizzaId() << ": " << type << " " << size << std::endl;
     return s;
 }

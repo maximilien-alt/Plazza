@@ -105,3 +105,8 @@ std::string Plazza::Socket::_getline(FILE *fp)
     free (buffer);
     return result;
 }
+
+void Plazza::Socket::clearFd(int fd)
+{
+    FD_CLR(fd, &_activeFds);
+}

@@ -23,6 +23,8 @@
 #include <regex>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <iostream>
+#include <fstream>
 
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -22,7 +22,7 @@ namespace Plazza {
             Kitchen giveMeKitchen(int, int, int);
             void dump();
             size_t size() const;
-            std::pair<std::shared_ptr<Plazza::Kitchen>, int> at(int pos);
+            std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &at(int pos);
             void deleteKitchenFromFd(int fd);
             void updateMaxPizzasFromFd(int fd, int state);
 

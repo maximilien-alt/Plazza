@@ -31,6 +31,7 @@ namespace Plazza {
             bool isFdSet(int fd);
             FILE *_fdopen(int fd, std::string mode);
             void setActiveFd(int fd);
+            void clearFd(int);
 
             void createServerSocket();
 

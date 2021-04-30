@@ -20,6 +20,7 @@ namespace Plazza {
             void run();
             size_t getQueueSize() const;
             std::vector<Plazza::Thread::STATUS> getThreadsStatus() const;
+            bool areTheyWorking();
 
         private:
             size_t _threadsNumber;

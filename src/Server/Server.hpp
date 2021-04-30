@@ -29,11 +29,16 @@ namespace Plazza {
             Reception *_reception;
             std::unordered_map<int, Order> _storage;
             KitchenManager _kitchenManager;
+            std::ofstream log;
+
+
             void acceptOrRead(int);
             void createKitchen();
             void parseOrders(std::vector<Plazza::Order> orders);
-            std::string readFromKitchen(int fd);
+            void readFromKitchen(int fd);
             void OneOrder(Plazza::Order order);
+            void updateCookedPizzaStatus(std::string, int);
+            void writeOrderToLog(Plazza::Order order);
     };
 }
 

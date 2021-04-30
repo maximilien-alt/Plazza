@@ -14,13 +14,14 @@
 #include "../Pizzas/PizzaFactory.hpp"
 #include "../Thread/ThreadPool.hpp"
 #include "../Thread/ScopedLock.hpp"
+#include "../Clock.hpp"
 
 namespace Plazza {
     class Kitchen {
         public:
             Kitchen() = default;
             //Kitchen(const Kitchen &)=;
-            Kitchen(const float &, const int &, const int &);
+            Kitchen(const float &, const int &, const int &, const int &);
             ~Kitchen();
 
             void dump() const;
@@ -34,14 +35,22 @@ namespace Plazza {
             bool operator==(const Kitchen& r);
 
             void selfKill();
+            void parseQuestions(std::string sbuffer);
+            void handleClocks();
+
+            static std::vector<std::string> fromIds(std::string);
 
         private:
             int _cooksNumber;
             int _IngredientsCoolDown;
             float _timeMultiplier;
             int _fd;
+            int _id;
             working_item_t _item;
             ThreadPool _cooks;
+            Clock _refillClock;
+            Clock _activityClock;
+            bool _isActive = true;
     };
 }
 

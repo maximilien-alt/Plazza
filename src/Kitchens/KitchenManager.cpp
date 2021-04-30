@@ -28,18 +28,24 @@ void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen, int maxPizzas)
 
 Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown)
 {
-    return (Plazza::Kitchen(time, cooks, cooldown));
+    static int id = 1;
+    return (Plazza::Kitchen(time, cooks, cooldown, id++));
 }
 
 void Plazza::KitchenManager::dump()
 {
     int index = 1;
+    int ret = 0;
+    int protocol = 1;
 
     for (auto &n: _kitchens) {
-        std::cout << "  Kitchen number " << index << ":" << std::endl;
+        write(n.first->getFd(), &protocol, 4);
         dprintf(n.first->getFd(), "dump\n");
+        read(n.first->getFd(), &ret, 4);
         index += 1;
     }
+    if (_kitchens.size() == 0)
+        std::cout << "No kitchens were found... Try to take an order before do that!" << std::endl;
 }
 
 size_t Plazza::KitchenManager::size() const
@@ -47,17 +53,13 @@ size_t Plazza::KitchenManager::size() const
     return _kitchens.size();
 }
 
-std::pair<std::shared_ptr<Plazza::Kitchen>, int> Plazza::KitchenManager::at(int pos)
+std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &Plazza::KitchenManager::at(int pos)
 {
     int index = 0;
-    std::pair<std::shared_ptr<Plazza::Kitchen>, int> pair; 
 
     for (auto &n: _kitchens)
-        if (index++ == pos) {
-            pair = n;
-            break;
-        }
-    return pair;
+        if (index++ == pos)
+            return n;
 }
 
 void Plazza::KitchenManager::deleteKitchenFromFd(int fd)

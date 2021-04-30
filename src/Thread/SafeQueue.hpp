@@ -15,6 +15,7 @@ namespace Plazza {
     {
         Fridge *fridge;
         APizza pizza;
+        int kitchenFd;
     } working_item_t;
 
     template<typename T>

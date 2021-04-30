@@ -46,8 +46,9 @@ void *Plazza::Thread::execute(void *arg)
 {
     Plazza::Thread *_this = static_cast<Plazza::Thread *>(arg);
 
-    _this->_item.get()->fridge->selectIngredients(_this->_item.get()->pizza);
-    std::this_thread::sleep_for(std::chrono::seconds((int)_this->_item.get()->pizza.getBakedTime()));
+    _this->_item->fridge->selectIngredients(_this->_item->pizza);
+    std::this_thread::sleep_for(std::chrono::seconds((int)_this->_item->pizza.getBakedTime()));
+    dprintf(_this->_item->kitchenFd, "%d %d\n", _this->_item->pizza.getOrderId(), _this->_item->pizza.getPizzaId());
     _this->_status = Plazza::Thread::NOTRUNNING;
     return nullptr;
 }
