@@ -39,8 +39,6 @@ int Plazza::Kitchen::howManyPizzasCanITake() const
 
 void Plazza::Kitchen::dump() const
 {
-    std::shared_ptr<Plazza::IMutex> mutex = std::make_shared<Plazza::AMutex>();
-    ScopedLock lock(mutex);
     int index = 1;
 
     std::cout << "  Kitchen number " << _id << ":" << std::endl;
@@ -64,9 +62,6 @@ int Plazza::Kitchen::getFd() const
 
 void Plazza::Kitchen::takeOrder(std::string sbuffer)
 {
-    std::shared_ptr<Plazza::IMutex> mutex = std::make_shared<Plazza::AMutex>();
-    ScopedLock lock(mutex);
-
     Plazza::APizza pizza = Plazza::PizzaFactory::unpack(sbuffer, _timeMultiplier);
     _item.pizza = pizza;
     _cooks.addItem(_item);
@@ -91,7 +86,7 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
     if (sbuffer == "dump")
         dump();
     if (sbuffer == "ping") {
-        std::cout << "Just get pinged from server! Better have to watch the log.txt file ;)" << std::endl;
+        std::cout << "Just get pinged from server!" << std::endl;
         if (_cooks.getQueueSize() > 0)
             _cooks.run();
         _isActive = true;
@@ -115,22 +110,15 @@ std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)
     return vector;
 }
 
-void Plazza::Kitchen::startProcess(Socket &socket)
+void Plazza::Kitchen::acceptOrRead(Socket &socket, int i, FILE *fp)
 {
-    int fd = socket.getSocketId();
-    FILE *fp = socket._fdopen(fd, "rw");
     int protocol = 0;
 
-    socket.setActiveFd(fd);
-    _fd = fd;
-    _item.kitchenFd = _fd;
-    while (1) {
-        //handleClocks();
-        if (socket._select() < 0 || !read(_fd, &protocol, 4))
-            continue;
+    if (i == _fd) {
+        if (!read(_fd, &protocol, 4))
+            return;
         try {
             std::string sbuffer = socket._getline(fp);
-            sbuffer.erase(--sbuffer.end());
             switch (protocol) {
                 case 1: parseQuestions(sbuffer);
                     break;
@@ -145,11 +133,34 @@ void Plazza::Kitchen::startProcess(Socket &socket)
     }
 }
 
+void Plazza::Kitchen::startProcess(Socket &socket)
+{
+    int fd = socket.getSocketId();
+    FILE *fp = socket._fdopen(fd, "rw");
+    int protocol = 0;
+
+    socket.setActiveFd(fd);
+    _fd = fd;
+    _item.kitchenFd = _fd;
+    while (1) {
+        handleClocks();
+        if (socket._select() < 0) {
+            continue;
+        }
+        for (int i = 0; i < socket.getFdsSize(); i += 1) {
+            if (socket.isFdSet(i))
+                acceptOrRead(socket, i, fp);
+        }
+    }
+}
+
 void Plazza::Kitchen::handleClocks()
 {
     if (_refillClock.getElapsedTime() > _IngredientsCoolDown) {
         _item.fridge->refillStock();
         _refillClock.reset();
+        if (_cooks.getQueueSize() > 0)
+            _cooks.run();
         std::cout << "Refill Stock!" << std::endl;
     }
     if (_activityClock.getElapsedTime() > 5) {

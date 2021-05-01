@@ -112,6 +112,7 @@ void Plazza::Server::updateCookedPizzaStatus(std::string buffer, int fd)
         if ((*it).second.pizzaIsCooked(std::stoi(vector[1]))) {
             writeOrderToLog((*it).second);
             _storage.erase(it);
+            std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
         }
     }
 }
@@ -126,6 +127,7 @@ void Plazza::Server::readFromKitchen(int fd)
             if (buffer == "kill") {
                 _socket.clearFd(fd);
                 _kitchenManager.deleteKitchenFromFd(fd);
+                close(fd);
             } else
                 updateCookedPizzaStatus(buffer, fd);
         } catch (const std::exception &e) {
@@ -144,6 +146,7 @@ void Plazza::Server::acceptOrRead(int i)
             parseOrders(orders);
             if (status)
                 _kitchenManager.dump();
+            status = false;
             orders.clear();
         } catch (const std::exception &e) {
             //getline failed, end of all process

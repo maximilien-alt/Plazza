@@ -37,6 +37,7 @@ namespace Plazza {
             void selfKill();
             void parseQuestions(std::string sbuffer);
             void handleClocks();
+            void acceptOrRead(Socket &socket, int i, FILE *fp);
 
             static std::vector<std::string> fromIds(std::string);
 

@@ -11,6 +11,8 @@
 #include "../Pizzas/APizza.hpp"
 #include "../Kitchens/Fridge.hpp"
 #include "SafeQueue.hpp"
+#include "ScopedLock.hpp"
+#include "IMutex.hpp"
 
 namespace Plazza
 {

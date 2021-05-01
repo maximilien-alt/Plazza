@@ -44,6 +44,8 @@ void Plazza::Thread::run(std::shared_ptr<Plazza::working_item_t> item)
 
 void *Plazza::Thread::execute(void *arg)
 {
+    std::shared_ptr<Plazza::IMutex> mutex = std::make_shared<Plazza::AMutex>();
+    ScopedLock lock(mutex);
     Plazza::Thread *_this = static_cast<Plazza::Thread *>(arg);
 
     _this->_item->fridge->selectIngredients(_this->_item->pizza);

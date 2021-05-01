@@ -38,6 +38,7 @@ namespace Plazza {
         private:
             int _socketId;
             int _listeningPort;
+            struct timeval t;
             struct sockaddr_in _settings;
             fd_set _activeFds;
             fd_set _readFds;
