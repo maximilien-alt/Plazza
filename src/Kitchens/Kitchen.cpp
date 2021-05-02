@@ -7,11 +7,24 @@
 
 #include "Kitchen.hpp"
 
-Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks) 
+void pizzaIsCook(void *arg, Plazza::APizza pizza)
+{
+    Plazza::Kitchen *kitchen = static_cast<Plazza::Kitchen *>(arg);
+
+    dprintf(kitchen->getFd(), "%d %d\n", pizza.getOrderId(), pizza.getPizzaId());
+    if (kitchen->getCooks().getQueueSize() > 0)
+        kitchen->getCooks().run();
+    kitchen->setActiveState(true);
+    std::cout << "Pizza cooked!" << std::endl;
+}
+
+Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks, this, pizzaIsCook) 
 {
     std::cout << "New kitchen created with " << _cooksNumber << " cooks!" << std::endl;
     _item.fridge = new Plazza::Fridge();
     _item.kitchenFd = 0;
+    //std::thread timeThread(&Plazza::Kitchen::handleClocks, this);
+    //timeThread.detach();
 }
 
 Plazza::Kitchen::~Kitchen()
@@ -22,9 +35,9 @@ Plazza::Kitchen::~Kitchen()
 
 int Plazza::Kitchen::howManyPizzasAreCooking() const
 {
-    std::vector<Plazza::Thread::STATUS> status = _cooks.getThreadsStatus();
+    std::vector<Plazza::Cook::STATUS> status = _cooks.getThreadsStatus();
 
-    return std::count(status.begin(), status.end(), Plazza::Thread::STATUS::RUNNING);
+    return std::count(status.begin(), status.end(), Plazza::Cook::STATUS::COOKING);
 }
 
 bool Plazza::Kitchen::operator==(const Kitchen& r)
@@ -43,9 +56,9 @@ void Plazza::Kitchen::dump() const
 
     std::cout << "  Kitchen number " << _id << ":" << std::endl;
     std::cout << "We have " << _cooksNumber << " cooks here!" << std::endl;
-    std::vector<Plazza::Thread::STATUS> status = _cooks.getThreadsStatus();
+    std::vector<Plazza::Cook::STATUS> status = _cooks.getThreadsStatus();
     for (auto &n: status) {
-        if (n == Plazza::Thread::STATUS::RUNNING)
+        if (n == Plazza::Cook::STATUS::COOKING)
             std::cout << "Cook number " << index++ << " is cooking!" << std::endl;
         else
             std::cout << "Cook number " << index++ << " is waiting!" << std::endl;
@@ -63,9 +76,12 @@ int Plazza::Kitchen::getFd() const
 void Plazza::Kitchen::takeOrder(std::string sbuffer)
 {
     Plazza::APizza pizza = Plazza::PizzaFactory::unpack(sbuffer, _timeMultiplier);
+    int response = 0;
+
     _item.pizza = pizza;
     _cooks.addItem(_item);
     _cooks.run();
+    write(_fd, &response, 4);
 }
 
 void Plazza::Kitchen::setFd(int newFd)
@@ -78,6 +94,7 @@ void Plazza::Kitchen::selfKill()
 {
     std::cout << "For some reasons, I decided to kill myself" << std::endl;
     dprintf(_fd, "kill\n");
+    _cooks.killThreads();
     exit(0);
 }
 
@@ -85,12 +102,6 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
 {
     if (sbuffer == "dump")
         dump();
-    if (sbuffer == "ping") {
-        std::cout << "Just get pinged from server!" << std::endl;
-        if (_cooks.getQueueSize() > 0)
-            _cooks.run();
-        _isActive = true;
-    }
 }
 
 std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)
@@ -110,29 +121,6 @@ std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)
     return vector;
 }
 
-void Plazza::Kitchen::acceptOrRead(Socket &socket, int i, FILE *fp)
-{
-    int protocol = 0;
-
-    if (i == _fd) {
-        if (!read(_fd, &protocol, 4))
-            return;
-        try {
-            std::string sbuffer = socket._getline(fp);
-            switch (protocol) {
-                case 1: parseQuestions(sbuffer);
-                    break;
-                case 2: takeOrder(sbuffer);
-                    break;
-                default: break;
-            }
-        } catch (const std::exception &e) {
-            //std::cerr << e.what();
-            selfKill();
-        }
-    }
-}
-
 void Plazza::Kitchen::startProcess(Socket &socket)
 {
     int fd = socket.getSocketId();
@@ -143,31 +131,52 @@ void Plazza::Kitchen::startProcess(Socket &socket)
     _fd = fd;
     _item.kitchenFd = _fd;
     while (1) {
-        handleClocks();
-        if (socket._select() < 0) {
+        //handleClocks();
+        if (socket._select() < 0 || !socket.isFdSet(_fd) || !read(_fd, &protocol, 4))
             continue;
-        }
-        for (int i = 0; i < socket.getFdsSize(); i += 1) {
-            if (socket.isFdSet(i))
-                acceptOrRead(socket, i, fp);
+        try {
+            std::string sbuffer = socket._getline(fp);
+            switch (protocol) {
+                case 1: parseQuestions(sbuffer);
+                    break;
+                case 2: takeOrder(sbuffer);
+                    break;
+                default: break;
+            }
+        } catch (const std::exception &e) {
+            selfKill();
         }
     }
 }
 
+void Plazza::Kitchen::setActiveState(bool value)
+{
+    _isActive = value;
+}
+
+Plazza::ThreadPool &Plazza::Kitchen::getCooks()
+{
+    return _cooks;
+}
+
 void Plazza::Kitchen::handleClocks()
 {
-    if (_refillClock.getElapsedTime() > _IngredientsCoolDown) {
-        _item.fridge->refillStock();
-        _refillClock.reset();
-        if (_cooks.getQueueSize() > 0)
-            _cooks.run();
-        std::cout << "Refill Stock!" << std::endl;
-    }
-    if (_activityClock.getElapsedTime() > 5) {
-        std::cout << "Time to check this kitchen activity" << std::endl;
-        if (!_isActive && !_cooks.areTheyWorking())
-            return selfKill();
-        _isActive = false;
-        _activityClock.reset();
+    while (1) {
+        if (_refillClock.getElapsedTime() > _IngredientsCoolDown) {
+            _item.fridge->refillStock();
+            _refillClock.reset();
+            if (_cooks.getQueueSize() > 0)
+                _cooks.run();
+            std::cout << "Refill Stock!" << std::endl;
+        }
+        if (_activityClock.getElapsedTime() > 5) {
+            std::cout << "Time to check this kitchen activity" << std::endl;
+            if (!_isActive && !_cooks.areTheyWorking()) {
+                _isDead = true;
+                selfKill();
+            }
+            _isActive = false;
+            _activityClock.reset();
+        }
     }
 }

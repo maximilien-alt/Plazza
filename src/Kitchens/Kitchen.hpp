@@ -32,14 +32,15 @@ namespace Plazza {
             void startProcess(Socket &);
             int getFd() const;
             void setFd(int newFd);
+            Plazza::ThreadPool &getCooks();
             bool operator==(const Kitchen& r);
 
             void selfKill();
             void parseQuestions(std::string sbuffer);
             void handleClocks();
-            void acceptOrRead(Socket &socket, int i, FILE *fp);
 
             static std::vector<std::string> fromIds(std::string);
+            void setActiveState(bool value);
 
         private:
             int _cooksNumber;
@@ -52,6 +53,7 @@ namespace Plazza {
             Clock _refillClock;
             Clock _activityClock;
             bool _isActive = true;
+            bool _isDead = false;
     };
 }
 

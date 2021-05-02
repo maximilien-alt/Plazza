@@ -20,10 +20,9 @@ bool Plazza::KitchenManager::empty() const
     return _kitchens.empty();
 }
 
-void Plazza::KitchenManager::addKitchen(int fd, Kitchen &kitchen, int maxPizzas)
+void Plazza::KitchenManager::addKitchen(int fd, int maxPizzas)
 {
-    kitchen.setFd(fd);
-    _kitchens.insert(std::make_pair(std::make_shared<Plazza::Kitchen>(kitchen), maxPizzas));
+    _kitchens.insert(std::make_pair(fd, maxPizzas));
 }
 
 Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown)
@@ -39,9 +38,9 @@ void Plazza::KitchenManager::dump()
     int protocol = 1;
 
     for (auto &n: _kitchens) {
-        write(n.first->getFd(), &protocol, 4);
-        dprintf(n.first->getFd(), "dump\n");
-        read(n.first->getFd(), &ret, 4);
+        write(n.first, &protocol, 4);
+        dprintf(n.first, "dump\n");
+        read(n.first, &ret, 4);
         index += 1;
     }
     if (_kitchens.size() == 0)
@@ -53,7 +52,7 @@ size_t Plazza::KitchenManager::size() const
     return _kitchens.size();
 }
 
-std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &Plazza::KitchenManager::at(int pos)
+std::pair<const int, int> &Plazza::KitchenManager::at(int pos)
 {
     int index = 0;
 
@@ -64,8 +63,8 @@ std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &Plazza::KitchenManager::
 
 void Plazza::KitchenManager::deleteKitchenFromFd(int fd)
 {
-    for (std::unordered_map<std::shared_ptr<Plazza::Kitchen>, int>::iterator it = _kitchens.begin(); it != _kitchens.end(); ++it)
-        if ((*it).first->getFd() == fd) {
+    for (std::unordered_map<int, int>::iterator it = _kitchens.begin(); it != _kitchens.end(); ++it)
+        if ((*it).first == fd) {
             _kitchens.erase(it);
             return;
         }
@@ -73,9 +72,7 @@ void Plazza::KitchenManager::deleteKitchenFromFd(int fd)
 
 void Plazza::KitchenManager::updateMaxPizzasFromFd(int fd, int state)
 {
-    for (auto &n: _kitchens)
-        if (n.first->getFd() == fd) {
-            n.second += state;
-            return;
-        }
+    std::unordered_map<int, int>::iterator it = _kitchens.find(fd);
+    if (it != _kitchens.end())
+        _kitchens[fd] += state;
 }

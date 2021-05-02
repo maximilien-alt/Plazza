@@ -8,23 +8,25 @@
 #ifndef THREADPOOL_HPP_
 #define THREADPOOL_HPP_
 
-#include "Thread.hpp"
+#include "../Kitchens/Cook.hpp"
 
 namespace Plazza {
+    class Kitchen;
     class ThreadPool {
         public:
-            ThreadPool(const int &);
+            ThreadPool(const int &, Kitchen *, void (*pizzaIsCook)(void *, APizza));
             ~ThreadPool();
 
             void addItem(working_item_t &);
             void run();
             size_t getQueueSize() const;
-            std::vector<Plazza::Thread::STATUS> getThreadsStatus() const;
+            std::vector<Plazza::Cook::STATUS> getThreadsStatus() const;
             bool areTheyWorking();
+            void killThreads();
 
         private:
             size_t _threadsNumber;
-            std::vector<Thread> _threads;
+            std::vector<std::shared_ptr<Plazza::Cook>> _threads;
             SafeQueue<working_item_t> _safeQueue;
 
     };

@@ -13,7 +13,7 @@ SRC	=	$(wildcard src/*.cpp)	\
 		$(wildcard src/Thread/*.cpp)	\
 		$(wildcard src/Server/*.cpp)
 
-SRC_FLAGS	=	-W -Wall -Wextra -lpthread -g3 -Wno-class-memaccess
+SRC_FLAGS	=	-W -Wall -Wextra -lpthread -g3 -Wno-class-memaccess -std=c++17
 
 OBJ_SRC	=	$(SRC:.cpp=.o)
 

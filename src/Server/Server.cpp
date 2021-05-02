@@ -25,9 +25,9 @@ Plazza::Server::~Server()
 
 void Plazza::Server::createKitchen()
 {
-    Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown);
 
     if (fork() == 0) {
+        Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown);
         Plazza::Socket kitchenSocket;
         kitchenSocket._connect(_socket.getListenginPort());
         newOne.startProcess(kitchenSocket);
@@ -35,7 +35,7 @@ void Plazza::Server::createKitchen()
     }
     int fd = _socket._accept();
     _socket.setActiveFd(fd);
-    _kitchenManager.addKitchen(fd, newOne, 2 * _cooksPerKitchen);
+    _kitchenManager.addKitchen(fd, 2 * _cooksPerKitchen);
 }
 
 Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas, int position)
@@ -54,11 +54,12 @@ void Plazza::Server::OneOrder(Plazza::Order order)
 {
     std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &pizzas = order.getPizzas();
     int protocol = 2;
+    int response = 0;
 
     for (size_t index = 0; index < _kitchenManager.size(); index += 1) {
         try {
-            std::pair<const std::shared_ptr<Plazza::Kitchen>, int> &pair = _kitchenManager.at(index);
-            int kitchenFd = pair.first->getFd();
+            std::pair<const int, int> &pair = _kitchenManager.at(index);
+            int kitchenFd = pair.first;
             int maxPizzas = pair.second;
             for (int i = 0; i < maxPizzas; i += 1) {
                 if (pizzas.empty())
@@ -66,6 +67,7 @@ void Plazza::Server::OneOrder(Plazza::Order order)
                 Plazza::APizza *currentPizza = getPizzaFromPosition(pizzas, 0);
                 write(kitchenFd, &protocol, 4);
                 dprintf(kitchenFd, "%s\n", PizzaFactory::pack(*currentPizza).c_str());
+                read(kitchenFd, &response, 4);
                 pizzas.erase(pizzas.begin());
                 pair.second -= 1;
             }
@@ -107,13 +109,12 @@ void Plazza::Server::updateCookedPizzaStatus(std::string buffer, int fd)
 
     std::unordered_map<int, Plazza::Order>::iterator it = _storage.find(std::stoi(vector[0]));
     if (it != _storage.end()) {
-        write(fd, &protocol, 4);
-        dprintf(fd, "ping\n");
         if ((*it).second.pizzaIsCooked(std::stoi(vector[1]))) {
             writeOrderToLog((*it).second);
             _storage.erase(it);
             std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
         }
+        _kitchenManager.updateMaxPizzasFromFd(fd, 1);
     }
 }
 

@@ -33,7 +33,7 @@ void Plazza::Socket::createServerSocket()
 int Plazza::Socket::_select()
 {
     _readFds = _activeFds;
-    return (select(FD_SETSIZE, &_readFds, NULL, NULL, &t));
+    return (select(FD_SETSIZE, &_readFds, NULL, NULL, NULL));
 }
 
 int Plazza::Socket::_accept()
@@ -77,8 +77,8 @@ void Plazza::Socket::newSocket()
     _settings.sin_port = 0;
     _settings.sin_addr.s_addr = inet_addr("127.0.0.1");
     FD_ZERO(&_activeFds);
-    t.tv_sec = 1;
-    t.tv_usec = 0;
+    //t.tv_sec = 1;
+    //t.tv_usec = 0;
 }
 
 int Plazza::Socket::getSocketId() const
