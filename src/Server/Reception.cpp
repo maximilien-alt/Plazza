@@ -35,8 +35,8 @@ std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status)
     std::vector<Plazza::Order> vector;
 
     getline(std::cin, _line);
-    //if (std::cin.eof())
-    //    throw Error("[Reception]: EOF!");
+    if (std::cin.eof())
+        throw Error("[Reception]: EOF!");
     _currentOrders.clear();
     splitLineIntoVector(_line, _currentOrders, ";");
     for (auto &n: _currentOrders) {

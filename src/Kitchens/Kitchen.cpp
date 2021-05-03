@@ -90,10 +90,11 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
     if (sbuffer == "dump")
         dump();
     if (sbuffer == "shutdown") {
-        std::cout << "HERE ?!" << std::endl;
         _cooks.killThreads();
         exit(0);
     }
+    if (sbuffer == "ping")
+        _isActive = true;
 }
 
 std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)

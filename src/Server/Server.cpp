@@ -9,6 +9,8 @@
 
 Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown), log("log.txt")
 {
+    if (cooldown < 1)
+        throw Error("Ingredients cooldown is in milliseconds: try at least bigger than 1000");
     try {
         _socket.createServerSocket();
     } catch (const std::exception &e) {
@@ -123,6 +125,8 @@ void Plazza::Server::updateCookedPizzaStatus(int fd)
         }
         _kitchenManager.updateMaxPizzasFromFd(fd, 1);
     }
+    write(fd, &protocol, 4);
+    write(fd, "ping\n", 5);
 }
 
 void Plazza::Server::readFromKitchen(int fd)

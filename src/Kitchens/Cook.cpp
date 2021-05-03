@@ -24,7 +24,7 @@ void Plazza::Cook::run()
     int pizzaId = 0;
     int time = 0;
 
-    std::cout << "Waiting" << std::endl;
+    //std::cout << "Waiting" << std::endl;
     while (_status == Plazza::Cook::WAITING);
     if (_status == Plazza::Cook::DEAD)
         return;
