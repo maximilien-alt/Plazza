@@ -11,7 +11,7 @@ void pizzaIsCook(void *arg, Plazza::APizza pizza)
 {
     Plazza::Kitchen *kitchen = static_cast<Plazza::Kitchen *>(arg);
 
-    dprintf(kitchen->getFd(), "%d %d\n", pizza.getOrderId(), pizza.getPizzaId());
+    //dprintf(kitchen->getFd(), "%d %d\n", pizza.getOrderId(), pizza.getPizzaId());
     if (kitchen->getCooks().getQueueSize() > 0)
         kitchen->getCooks().run();
     kitchen->setActiveState(true);
@@ -131,7 +131,8 @@ void Plazza::Kitchen::startProcess(Socket &socket)
     _fd = fd;
     _item.kitchenFd = _fd;
     while (1) {
-        //handleClocks();
+        if (_isDead)
+            selfKill();
         if (socket._select() < 0 || !socket.isFdSet(_fd) || !read(_fd, &protocol, 4))
             continue;
         try {
@@ -173,7 +174,7 @@ void Plazza::Kitchen::handleClocks()
             std::cout << "Time to check this kitchen activity" << std::endl;
             if (!_isActive && !_cooks.areTheyWorking()) {
                 _isDead = true;
-                selfKill();
+                exit(0);
             }
             _isActive = false;
             _activityClock.reset();

@@ -35,8 +35,6 @@ namespace Plazza {
         private:
             std::shared_ptr<working_item_t> _item;
             STATUS _status;
-            std::condition_variable _cond_var;
-            std::mutex _mutex;
             void (*_pizzaIsCook)(void *, Plazza::APizza);
             Kitchen *_kitchen;
     };

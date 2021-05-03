@@ -13,26 +13,20 @@ Plazza::Cook::Cook(void (*pizzaIsCook)(void *, Plazza::APizza), Plazza::Kitchen 
 
 void Plazza::Cook::startCooking(std::shared_ptr<Plazza::working_item_t> item)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
     _item = item;
     _status = Plazza::Cook::COOKING;
-    _cond_var.notify_one();
 }
 
 void Plazza::Cook::run()
 {
-    std::unique_lock<std::mutex> lock(_mutex);
-
-    _cond_var.wait(lock, [this]() {
-        return (_status == Plazza::Cook::COOKING);
-    });
+    while (_status == Plazza::Cook::WAITING);
     if (_status == Plazza::Cook::DEAD)
         return;
     _item->fridge->selectIngredients(_item->pizza);
     std::this_thread::sleep_for(std::chrono::seconds((int)_item->pizza.getBakedTime()));
+    //dprintf(_item->kitchenFd, "%d %d\n", _item->pizza.getOrderId(), _item->pizza.getPizzaId());
     _status = Plazza::Cook::WAITING;
-    _pizzaIsCook(_kitchen, _item->pizza);
+    //_pizzaIsCook(_kitchen, _item->pizza);
     run();
 }
 
@@ -43,8 +37,5 @@ Plazza::Cook::STATUS Plazza::Cook::getStatus() const
 
 void Plazza::Cook::autoDestruct()
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
     _status = Plazza::Cook::DEAD;
-    _cond_var.notify_one();
 }

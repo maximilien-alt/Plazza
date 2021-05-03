@@ -25,11 +25,12 @@ Plazza::Server::~Server()
 
 void Plazza::Server::createKitchen()
 {
-
     if (fork() == 0) {
         Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown);
         Plazza::Socket kitchenSocket;
         kitchenSocket._connect(_socket.getListenginPort());
+        std::thread timeThread(&Plazza::Kitchen::handleClocks, &newOne);
+        timeThread.detach();
         newOne.startProcess(kitchenSocket);
         exit(0);
     }
