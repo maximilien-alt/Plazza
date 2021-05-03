@@ -19,12 +19,13 @@ namespace Plazza {
 
             bool empty() const;
             void addKitchen(int fd, int maxPizzas);
-            Kitchen giveMeKitchen(int, int, int);
+            Kitchen giveMeKitchen(int, int, int, int);
             void dump();
             size_t size() const;
             std::pair<const int, int> &at(int pos);
             void deleteKitchenFromFd(int fd);
             void updateMaxPizzasFromFd(int fd, int state);
+            void endAll();
 
         private:
             std::unordered_map<int, int> _kitchens;

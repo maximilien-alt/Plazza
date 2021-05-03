@@ -77,8 +77,6 @@ void Plazza::Socket::newSocket()
     _settings.sin_port = 0;
     _settings.sin_addr.s_addr = inet_addr("127.0.0.1");
     FD_ZERO(&_activeFds);
-    //t.tv_sec = 1;
-    //t.tv_usec = 0;
 }
 
 int Plazza::Socket::getSocketId() const

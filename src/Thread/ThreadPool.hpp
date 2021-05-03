@@ -14,7 +14,7 @@ namespace Plazza {
     class Kitchen;
     class ThreadPool {
         public:
-            ThreadPool(const int &, Kitchen *, void (*pizzaIsCook)(void *, APizza));
+            ThreadPool(const int &);
             ~ThreadPool();
 
             void addItem(working_item_t &);

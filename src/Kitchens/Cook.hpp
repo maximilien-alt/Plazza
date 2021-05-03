@@ -24,7 +24,7 @@ namespace Plazza {
                 DEAD
             };
 
-            Cook(void (*pizzaIsCook)(void *, APizza), Kitchen *);
+            Cook();
             ~Cook() = default;
 
             STATUS getStatus() const;
@@ -35,8 +35,6 @@ namespace Plazza {
         private:
             std::shared_ptr<working_item_t> _item;
             STATUS _status;
-            void (*_pizzaIsCook)(void *, Plazza::APizza);
-            Kitchen *_kitchen;
     };
 }
 

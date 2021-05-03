@@ -7,7 +7,7 @@
 
 #include "Cook.hpp"
 
-Plazza::Cook::Cook(void (*pizzaIsCook)(void *, Plazza::APizza), Plazza::Kitchen *kitchen): _status(Plazza::Cook::WAITING), _pizzaIsCook(pizzaIsCook), _kitchen(kitchen)
+Plazza::Cook::Cook(): _status(Plazza::Cook::WAITING)
 {
 }
 
@@ -19,14 +19,24 @@ void Plazza::Cook::startCooking(std::shared_ptr<Plazza::working_item_t> item)
 
 void Plazza::Cook::run()
 {
+    int protocol = 3;
+    int orderId = 0;
+    int pizzaId = 0;
+    int time = 0;
+
+    std::cout << "Waiting" << std::endl;
     while (_status == Plazza::Cook::WAITING);
     if (_status == Plazza::Cook::DEAD)
         return;
     _item->fridge->selectIngredients(_item->pizza);
-    std::this_thread::sleep_for(std::chrono::seconds((int)_item->pizza.getBakedTime()));
-    //dprintf(_item->kitchenFd, "%d %d\n", _item->pizza.getOrderId(), _item->pizza.getPizzaId());
+    time = _item->pizza.getBakedTime() * 1000;
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
+    orderId = _item->pizza.getOrderId();
+    pizzaId = _item->pizza.getPizzaId();
+    write(_item->kitchenFd, &protocol, 4);
+    write(_item->kitchenFd, &orderId, 4);
+    write(_item->kitchenFd, &pizzaId, 4);
     _status = Plazza::Cook::WAITING;
-    //_pizzaIsCook(_kitchen, _item->pizza);
     run();
 }
 

@@ -25,10 +25,9 @@ void Plazza::KitchenManager::addKitchen(int fd, int maxPizzas)
     _kitchens.insert(std::make_pair(fd, maxPizzas));
 }
 
-Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown)
+Plazza::Kitchen Plazza::KitchenManager::giveMeKitchen(int time, int cooks, int cooldown, int id)
 {
-    static int id = 1;
-    return (Plazza::Kitchen(time, cooks, cooldown, id++));
+    return (Plazza::Kitchen(time, cooks, cooldown, id));
 }
 
 void Plazza::KitchenManager::dump()
@@ -39,12 +38,22 @@ void Plazza::KitchenManager::dump()
 
     for (auto &n: _kitchens) {
         write(n.first, &protocol, 4);
-        dprintf(n.first, "dump\n");
+        write(n.first, "dump\n", 5);
         read(n.first, &ret, 4);
         index += 1;
     }
     if (_kitchens.size() == 0)
         std::cout << "No kitchens were found... Try to take an order before do that!" << std::endl;
+}
+
+void Plazza::KitchenManager::endAll()
+{
+    int protocol = 1;
+
+    for (auto &n: _kitchens) {
+        write(n.first, &protocol, 4);
+        write(n.first, "shutdown\n", 9);
+    }
 }
 
 size_t Plazza::KitchenManager::size() const

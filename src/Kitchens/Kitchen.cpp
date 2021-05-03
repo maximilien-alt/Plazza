@@ -7,30 +7,15 @@
 
 #include "Kitchen.hpp"
 
-void pizzaIsCook(void *arg, Plazza::APizza pizza)
-{
-    Plazza::Kitchen *kitchen = static_cast<Plazza::Kitchen *>(arg);
-
-    //dprintf(kitchen->getFd(), "%d %d\n", pizza.getOrderId(), pizza.getPizzaId());
-    if (kitchen->getCooks().getQueueSize() > 0)
-        kitchen->getCooks().run();
-    kitchen->setActiveState(true);
-    std::cout << "Pizza cooked!" << std::endl;
-}
-
-Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks, this, pizzaIsCook) 
+Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks)
 {
     std::cout << "New kitchen created with " << _cooksNumber << " cooks!" << std::endl;
     _item.fridge = new Plazza::Fridge();
     _item.kitchenFd = 0;
-    //std::thread timeThread(&Plazza::Kitchen::handleClocks, this);
-    //timeThread.detach();
 }
 
 Plazza::Kitchen::~Kitchen()
 {
-    //delete _queue;
-    //delete _item.fridge;
 }
 
 int Plazza::Kitchen::howManyPizzasAreCooking() const
@@ -92,8 +77,10 @@ void Plazza::Kitchen::setFd(int newFd)
 
 void Plazza::Kitchen::selfKill()
 {
+    int protocol = 4;
+
     std::cout << "For some reasons, I decided to kill myself" << std::endl;
-    dprintf(_fd, "kill\n");
+    write(_fd, &protocol, 4);
     _cooks.killThreads();
     exit(0);
 }
@@ -102,6 +89,11 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
 {
     if (sbuffer == "dump")
         dump();
+    if (sbuffer == "shutdown") {
+        std::cout << "HERE ?!" << std::endl;
+        _cooks.killThreads();
+        exit(0);
+    }
 }
 
 std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)
@@ -168,16 +160,15 @@ void Plazza::Kitchen::handleClocks()
             _refillClock.reset();
             if (_cooks.getQueueSize() > 0)
                 _cooks.run();
-            std::cout << "Refill Stock!" << std::endl;
         }
-        if (_activityClock.getElapsedTime() > 5) {
-            std::cout << "Time to check this kitchen activity" << std::endl;
-            if (!_isActive && !_cooks.areTheyWorking()) {
-                _isDead = true;
-                exit(0);
-            }
-            _isActive = false;
-            _activityClock.reset();
-        }
+        //if (_activityClock.getElapsedTime() > 5) {
+        //    std::cout << "Time to check the "<< _id << "th kitchen activity" << std::endl;
+        //    if (!_isActive && !_cooks.areTheyWorking()) {
+        //        _isDead = true;
+        //        exit(0);
+        //    }
+        //    _isActive = false;
+        //    _activityClock.reset();
+        //}
     }
 }

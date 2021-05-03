@@ -20,7 +20,6 @@ namespace Plazza {
     class Kitchen {
         public:
             Kitchen() = default;
-            //Kitchen(const Kitchen &)=;
             Kitchen(const float &, const int &, const int &, const int &);
             ~Kitchen();
 

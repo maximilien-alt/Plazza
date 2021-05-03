@@ -71,7 +71,6 @@ namespace Plazza
         {
             if (_map.find(field) == _map.end())
                 throw Error("[Factory, GiveMeAPizza]: The pizza '" + field + "' does not exist!");
-            //APizza
             return (_map[field](size, orderId, pizzaId, time));
         };
 

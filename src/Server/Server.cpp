@@ -25,8 +25,10 @@ Plazza::Server::~Server()
 
 void Plazza::Server::createKitchen()
 {
+    static int id = 1;
+
     if (fork() == 0) {
-        Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown);
+        Plazza::Kitchen newOne = _kitchenManager.giveMeKitchen(_timeMultiplier, _cooksPerKitchen, _ingredientsCoolDown, id);
         Plazza::Socket kitchenSocket;
         kitchenSocket._connect(_socket.getListenginPort());
         std::thread timeThread(&Plazza::Kitchen::handleClocks, &newOne);
@@ -37,6 +39,7 @@ void Plazza::Server::createKitchen()
     int fd = _socket._accept();
     _socket.setActiveFd(fd);
     _kitchenManager.addKitchen(fd, 2 * _cooksPerKitchen);
+    id += 1;
 }
 
 Plazza::APizza *getPizzaFromPosition(std::unordered_map<int, std::shared_ptr<Plazza::APizza>> pizzas, int position)
@@ -103,14 +106,17 @@ void Plazza::Server::writeOrderToLog(Plazza::Order order)
         log << *n.second.get();
 }
 
-void Plazza::Server::updateCookedPizzaStatus(std::string buffer, int fd)
+void Plazza::Server::updateCookedPizzaStatus(int fd)
 {
-    std::vector<std::string> vector = Plazza::Kitchen::fromIds(buffer);
+    int orderId = 0;
+    int pizzaId = 0;
     int protocol = 1;
 
-    std::unordered_map<int, Plazza::Order>::iterator it = _storage.find(std::stoi(vector[0]));
+    read(fd, &orderId, 4);
+    read(fd, &pizzaId, 4);
+    std::unordered_map<int, Plazza::Order>::iterator it = _storage.find(orderId);
     if (it != _storage.end()) {
-        if ((*it).second.pizzaIsCooked(std::stoi(vector[1]))) {
+        if ((*it).second.pizzaIsCooked(pizzaId)) {
             writeOrderToLog((*it).second);
             _storage.erase(it);
             std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
@@ -121,21 +127,20 @@ void Plazza::Server::updateCookedPizzaStatus(std::string buffer, int fd)
 
 void Plazza::Server::readFromKitchen(int fd)
 {
-    FILE *fp = _socket._fdopen(fd, "r");
+    int protocol = 0;
 
-    //while (1) {
-        try {
-            std::string buffer = _socket._getline(fp);
-            if (buffer == "kill") {
-                _socket.clearFd(fd);
-                _kitchenManager.deleteKitchenFromFd(fd);
-                close(fd);
-            } else
-                updateCookedPizzaStatus(buffer, fd);
-        } catch (const std::exception &e) {
-            return;
-        }
-    //}
+    if (!read(fd, &protocol, 4))
+        return;
+    switch (protocol) {
+        case 4:
+            _socket.clearFd(fd);
+            _kitchenManager.deleteKitchenFromFd(fd);
+            close(fd);
+            break;
+        case 3: updateCookedPizzaStatus(fd);
+            break;
+        default: break;
+    }
 }
 
 void Plazza::Server::acceptOrRead(int i)
@@ -151,7 +156,7 @@ void Plazza::Server::acceptOrRead(int i)
             status = false;
             orders.clear();
         } catch (const std::exception &e) {
-            //getline failed, end of all process
+            _kitchenManager.endAll();
             exit(0);
         }
     } else

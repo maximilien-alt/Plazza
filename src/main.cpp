@@ -26,7 +26,7 @@ int main(int ac, char *av[])
             return (84);
     }
     try {
-        Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]));
+        Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]) / 1000);
         server.loop();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
