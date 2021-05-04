@@ -82,6 +82,7 @@ void Plazza::Kitchen::selfKill()
     std::cout << "For some reasons, I decided to kill myself" << std::endl;
     write(_fd, &protocol, 4);
     _cooks.killThreads();
+    _isDead = true;
     exit(0);
 }
 
@@ -156,6 +157,8 @@ Plazza::ThreadPool &Plazza::Kitchen::getCooks()
 void Plazza::Kitchen::handleClocks()
 {
     while (1) {
+        if (_isDead)
+            return;
         if (_refillClock.getElapsedTime() > _IngredientsCoolDown) {
             _item.fridge->refillStock();
             _refillClock.reset();
@@ -166,7 +169,6 @@ void Plazza::Kitchen::handleClocks()
         //    std::cout << "Time to check the "<< _id << "th kitchen activity" << std::endl;
         //    if (!_isActive && !_cooks.areTheyWorking()) {
         //        _isDead = true;
-        //        exit(0);
         //    }
         //    _isActive = false;
         //    _activityClock.reset();
