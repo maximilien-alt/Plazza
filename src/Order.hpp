@@ -20,7 +20,7 @@ namespace Plazza {
             size_t getSize() const;
             std::unordered_map<int, std::shared_ptr<Plazza::APizza>> &getPizzas();
             int getOrderId() const;
-            bool pizzaIsCooked(int);
+            bool pizzaIsCooked();
 
         private:
             PizzaFactory _factory;

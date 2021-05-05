@@ -37,7 +37,7 @@ namespace Plazza {
             void parseOrders(std::vector<Plazza::Order> orders);
             void readFromKitchen(int fd);
             void OneOrder(Plazza::Order order);
-            void updateCookedPizzaStatus(int);
+            void updateCookedPizzaStatus(int, int);
             void writeOrderToLog(Plazza::Order order);
     };
 }

@@ -74,7 +74,7 @@ void Plazza::Fridge::selectIngredients(APizza pizza)
 void Plazza::Fridge::refillStock()
 {
     for (auto &n: _content)
-        n.second += 1;
+        n.second += (n.second == 5) ? 0 : 1;
 }
 
 std::unordered_map<Plazza::Ingredients, int> &Plazza::Fridge::getContent()

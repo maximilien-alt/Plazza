@@ -7,7 +7,18 @@
 
 #include "Kitchen.hpp"
 
-Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks)
+void pizzaCook(void *arg, Plazza::APizza pizza)
+{
+    Plazza::Kitchen *_this = static_cast<Plazza::Kitchen *>(arg);
+    int orderId = 1000;
+
+    _this->getCooks().run();
+    _this->setActiveState(true);
+    orderId += pizza.getOrderId();
+    write(_this->getFd(), &orderId, 4);
+}
+
+Plazza::Kitchen::Kitchen(const float &time, const int &cooks, const int &cooldown, const int &id): _cooksNumber(cooks), _IngredientsCoolDown(cooldown), _timeMultiplier(time), _fd(0), _id(id), _cooks(cooks, pizzaCook, this)
 {
     std::cout << "New kitchen created with " << _cooksNumber << " cooks!" << std::endl;
     _item.fridge = new Plazza::Fridge();
@@ -61,7 +72,7 @@ int Plazza::Kitchen::getFd() const
 void Plazza::Kitchen::takeOrder(std::string sbuffer)
 {
     Plazza::APizza pizza = Plazza::PizzaFactory::unpack(sbuffer, _timeMultiplier);
-    int response = 0;
+    int response = 3;
 
     _item.pizza = pizza;
     _cooks.addItem(_item);
@@ -77,7 +88,7 @@ void Plazza::Kitchen::setFd(int newFd)
 
 void Plazza::Kitchen::selfKill()
 {
-    int protocol = 4;
+    int protocol = 2000;
 
     std::cout << "For some reasons, I decided to kill myself" << std::endl;
     write(_fd, &protocol, 4);
@@ -94,8 +105,6 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
         _cooks.killThreads();
         exit(0);
     }
-    if (sbuffer == "ping")
-        _isActive = true;
 }
 
 std::vector<std::string> Plazza::Kitchen::fromIds(std::string str)

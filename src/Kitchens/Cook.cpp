@@ -7,7 +7,7 @@
 
 #include "Cook.hpp"
 
-Plazza::Cook::Cook(): _status(Plazza::Cook::WAITING)
+Plazza::Cook::Cook(void (*finish)(void *, Plazza::APizza), Plazza::Kitchen *kitchen): _status(Plazza::Cook::WAITING), _finish(finish), _kitchen(kitchen)
 {
 }
 
@@ -31,11 +31,7 @@ void Plazza::Cook::run()
     _item->fridge->selectIngredients(_item->pizza);
     time = _item->pizza.getBakedTime() * 1000;
     std::this_thread::sleep_for(std::chrono::milliseconds(time));
-    orderId = _item->pizza.getOrderId();
-    pizzaId = _item->pizza.getPizzaId();
-    write(_item->kitchenFd, &protocol, 4);
-    write(_item->kitchenFd, &orderId, 4);
-    write(_item->kitchenFd, &pizzaId, 4);
+    _finish(_kitchen, _item->pizza);
     _status = Plazza::Cook::WAITING;
     run();
 }

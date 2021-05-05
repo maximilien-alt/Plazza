@@ -7,10 +7,10 @@
 
 #include "ThreadPool.hpp"
 
-Plazza::ThreadPool::ThreadPool(const int &number): _threadsNumber(number)
+Plazza::ThreadPool::ThreadPool(const int &number, void (*finish)(void *, Plazza::APizza), Plazza::Kitchen *kitchen): _threadsNumber(number)
 {
     for (int index = 0; index < number; index += 1) {
-        std::shared_ptr<Plazza::Cook> cook = std::make_shared<Plazza::Cook>();
+        std::shared_ptr<Plazza::Cook> cook = std::make_shared<Plazza::Cook>(finish, kitchen);
         _threads.push_back(cook);
         std::thread thread(&Plazza::Cook::run, cook.get());
         thread.detach();

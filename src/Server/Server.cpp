@@ -108,40 +108,33 @@ void Plazza::Server::writeOrderToLog(Plazza::Order order)
         log << *n.second.get();
 }
 
-void Plazza::Server::updateCookedPizzaStatus(int fd)
+void Plazza::Server::updateCookedPizzaStatus(int fd, int orderId)
 {
-    int orderId = 0;
-    int pizzaId = 0;
-    int protocol = 1;
-
-    read(fd, &orderId, 4);
-    read(fd, &pizzaId, 4);
     std::unordered_map<int, Plazza::Order>::iterator it = _storage.find(orderId);
     if (it != _storage.end()) {
-        if ((*it).second.pizzaIsCooked(pizzaId)) {
+        if ((*it).second.pizzaIsCooked()) {
             writeOrderToLog((*it).second);
             _storage.erase(it);
             std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
         }
         _kitchenManager.updateMaxPizzasFromFd(fd, 1);
     }
-    write(fd, &protocol, 4);
-    write(fd, "ping\n", 5);
 }
 
 void Plazza::Server::readFromKitchen(int fd)
 {
-    int protocol = 0;
+    int number = 0;
 
-    if (!read(fd, &protocol, 4))
+    if (!read(fd, &number, 4))
         return;
+    int protocol = number / 1000;
     switch (protocol) {
-        case 4:
+        case 2:
             _socket.clearFd(fd);
             _kitchenManager.deleteKitchenFromFd(fd);
             close(fd);
             break;
-        case 3: updateCookedPizzaStatus(fd);
+        case 1: updateCookedPizzaStatus(fd, number % 1000);
             break;
         default: break;
     }
