@@ -88,12 +88,8 @@ void Plazza::Kitchen::setFd(int newFd)
 
 void Plazza::Kitchen::selfKill()
 {
-    int protocol = 2000;
-
-    std::cout << "For some reasons, I decided to kill myself" << std::endl;
-    write(_fd, &protocol, 4);
+    std::cout << "For some reasons, kitchen number " << _id << " decided to kill herself" << std::endl;
     _cooks.killThreads();
-    _isDead = true;
     exit(0);
 }
 
@@ -102,8 +98,7 @@ void Plazza::Kitchen::parseQuestions(std::string sbuffer)
     if (sbuffer == "dump")
         dump();
     if (sbuffer == "shutdown") {
-        _cooks.killThreads();
-        exit(0);
+        selfKill();
     }
 }
 
@@ -134,8 +129,6 @@ void Plazza::Kitchen::startProcess(Socket &socket)
     _fd = fd;
     _item.kitchenFd = _fd;
     while (1) {
-        if (_isDead)
-            selfKill();
         if (socket._select() < 0 || !socket.isFdSet(_fd) || !read(_fd, &protocol, 4))
             continue;
         try {
@@ -165,22 +158,22 @@ Plazza::ThreadPool &Plazza::Kitchen::getCooks()
 
 void Plazza::Kitchen::handleClocks()
 {
+    int protocol = 2000;
+
     while (1) {
-        if (_isDead)
-            return;
         if (_refillClock.getElapsedTime() > _IngredientsCoolDown) {
             _item.fridge->refillStock();
             _refillClock.reset();
             if (_cooks.getQueueSize() > 0)
                 _cooks.run();
         }
-        //if (_activityClock.getElapsedTime() > 5) {
-        //    std::cout << "Time to check the "<< _id << "th kitchen activity" << std::endl;
-        //    if (!_isActive && !_cooks.areTheyWorking()) {
-        //        _isDead = true;
-        //    }
-        //    _isActive = false;
-        //    _activityClock.reset();
-        //}
+        if (_activityClock.getElapsedTime() > 5) {
+            if (!_isActive && !_cooks.areTheyWorking()) {
+                write(_fd, &protocol, 4);
+                return;
+            }
+            _isActive = false;
+            _activityClock.reset();
+        }
     }
 }

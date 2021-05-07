@@ -19,9 +19,6 @@ void Plazza::Cook::startCooking(std::shared_ptr<Plazza::working_item_t> item)
 
 void Plazza::Cook::run()
 {
-    int protocol = 3;
-    int orderId = 0;
-    int pizzaId = 0;
     int time = 0;
 
     //std::cout << "Waiting" << std::endl;

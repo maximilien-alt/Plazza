@@ -26,6 +26,7 @@ namespace Plazza {
             void deleteKitchenFromFd(int fd);
             void updateMaxPizzasFromFd(int fd, int state);
             void endAll();
+            void endOne(int fd);
 
         private:
             std::unordered_map<int, int> _kitchens;

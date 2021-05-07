@@ -53,7 +53,16 @@ void Plazza::KitchenManager::endAll()
     for (auto &n: _kitchens) {
         write(n.first, &protocol, 4);
         write(n.first, "shutdown\n", 9);
+        close(n.first);
     }
+}
+
+void Plazza::KitchenManager::endOne(int fd)
+{
+    int protocol = 1;
+
+    write(fd, &protocol, 4);
+    write(fd, "shutdown\n", 9);
 }
 
 size_t Plazza::KitchenManager::size() const

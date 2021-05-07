@@ -19,14 +19,13 @@ namespace Plazza {
 
             int _select();
             int _accept();
-            void _connect(int);
+            void _connect();
             void newSocket();
 
             int getFdsSize();
             fd_set &getActiveFds();
             int getSocketId() const;
             std::string _getline(FILE *);
-            int getListenginPort() const;
 
             bool isFdSet(int fd);
             FILE *_fdopen(int fd, std::string mode);
@@ -37,9 +36,8 @@ namespace Plazza {
 
         private:
             int _socketId;
-            int _listeningPort;
             struct timeval t;
-            struct sockaddr_in _settings;
+            struct sockaddr_un _settings;
             fd_set _activeFds;
             fd_set _readFds;
     };

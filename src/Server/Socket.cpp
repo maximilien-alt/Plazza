@@ -21,12 +21,8 @@ void Plazza::Socket::createServerSocket()
 {
     if (bind(_socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1)
         throw Error("[Create Socket Server]: Fail binding socket!");
-    socklen_t len = sizeof(_settings);
-    if (getsockname(_socketId, (struct sockaddr *)&_settings, &len) == -1)
-        throw Error("[Create Socket Server]: Fail getsockname socket!");
     if (listen(_socketId, 1) == -1)
         throw Error("[Create Socket Server]: Fail listening socket!");
-    _listeningPort = ntohs(_settings.sin_port);
     FD_SET(_socketId, &_activeFds);
 }
 
@@ -38,15 +34,12 @@ int Plazza::Socket::_select()
 
 int Plazza::Socket::_accept()
 {
-    int size = sizeof(_settings);
-
-    return (accept(_socketId, (struct sockaddr *)&_settings, (socklen_t *)&size));
+    return (accept(_socketId, NULL, NULL));
 }
 
-void Plazza::Socket::_connect(int listeningPort)
+void Plazza::Socket::_connect()
 {
-    _settings.sin_port = ntohs(listeningPort);
-    while (connect(_socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1);
+    while (connect(_socketId, (const struct sockaddr *) &_settings, sizeof(_settings)) == -1);
 }
 
 fd_set &Plazza::Socket::getActiveFds()
@@ -71,22 +64,16 @@ bool Plazza::Socket::isFdSet(int fd)
 
 void Plazza::Socket::newSocket()
 {
-    _socketId = socket(PF_INET, SOCK_STREAM, 0);
-    bzero((char *) &_settings, sizeof(_settings));
-    _settings.sin_family = AF_INET;
-    _settings.sin_port = 0;
-    _settings.sin_addr.s_addr = inet_addr("127.0.0.1");
+    _socketId = socket(AF_UNIX, SOCK_STREAM, 0);
+    memset(&_settings, 0, sizeof(_settings));
+    _settings.sun_family = AF_UNIX;
+    strncpy(_settings.sun_path, "socket", sizeof(_settings.sun_path) - 1);
     FD_ZERO(&_activeFds);
 }
 
 int Plazza::Socket::getSocketId() const
 {
     return _socketId;
-}
-
-int Plazza::Socket::getListenginPort() const
-{
-    return (_listeningPort);
 }
 
 FILE *Plazza::Socket::_fdopen(int fd, std::string mode)

@@ -44,5 +44,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <sys/wait.h>
+#include <sys/un.h>
 
 #endif /* !INCLUDE_HPP_ */

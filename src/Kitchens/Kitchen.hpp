@@ -52,7 +52,6 @@ namespace Plazza {
             Clock _refillClock;
             Clock _activityClock;
             bool _isActive = true;
-            bool _isDead = false;
     };
 }
 
