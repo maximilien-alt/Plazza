@@ -14,6 +14,7 @@ Plazza::Button::Button(float x, float y):_rect(0, 0, 100, 200),_sprite()
     _sprite.setPosition(x, y);
     posx = x;
     posy = y;
+
 }
 
 Plazza::Button::~Button()
@@ -32,5 +33,16 @@ void Plazza::Button::draw(sf::RenderWindow &win)
     else
         _rect.left = 100;
     _sprite.setTextureRect(_rect);
+    _sprite.setScale(sf::Vector2f{0.625,0.625});
     win.draw(_sprite);
+}
+
+int Plazza::Button::getX(void) const
+{
+    return (posx);
+}
+
+int Plazza::Button::getY(void) const
+{
+    return (posy);
 }

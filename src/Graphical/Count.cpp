@@ -41,6 +41,10 @@ void Plazza::Count::draw(sf::RenderWindow &window)
     _text.setPosition(position.x + 110, position.y - 15);
     _text.setFont(_font);
     _text.setString(std::to_string(count));
+    _plus.setScale(sf::Vector2f{0.625,0.625});
+    _minus.setScale(sf::Vector2f{0.625,0.625});
+    _text.setScale(sf::Vector2f{0.625,0.625});
+
     window.draw(_plus);
     window.draw(_minus);
     window.draw(_text);

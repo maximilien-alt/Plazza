@@ -11,6 +11,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "Button.hpp"
+#include "Count.hpp"
 
 namespace Plazza {
     class Menu {
@@ -23,6 +24,7 @@ namespace Plazza {
         private:
             sf::RenderWindow _window;
             sf::Event _event;
+            std::vector<Button> tabBtn;
     };
 };
 

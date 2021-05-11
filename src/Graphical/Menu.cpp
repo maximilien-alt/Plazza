@@ -6,6 +6,7 @@
 */
 
 #include "Menu.hpp"
+#include <iostream>
 
 Plazza::Menu::Menu()
 {
@@ -19,7 +20,18 @@ Plazza::Menu::~Menu()
 
 void Plazza::Menu::loop()
 {
-    Button button(100, 100);
+    Count counter(790, 900);
+    for (int a = 0; a < 5; a++)
+    {
+        Button button(830, 650 - 75 * a);
+        tabBtn.push_back(button);
+    }
+    // Button button(1920 / 2 - 50, 1080 / 2 - 0);
+    // Button button1(1920 / 2 - 50, 1080 / 2 - 75);
+    // Button button2(1920 / 2 - 50, 1080 / 2 - 150);
+    // Button button3(1920 / 2 - 50, 1080 / 2 - 225);
+    Button button4(1920 / 2 - 50, 1080 / 2 - 300);
+
     while (_window.isOpen())
     {
         _window.clear(sf::Color::Black);
@@ -34,10 +46,28 @@ void Plazza::Menu::loop()
         {
             if (_event.type == sf::Event::Closed)
                 _window.close();
-            if (_event.type == sf::Event::KeyPressed)
-                button.check();
+            if (_event.type == sf::Event::MouseButtonPressed)
+            {
+                sf::Vector2i mouse = sf::Mouse::getPosition();
+                // std::cout << mouse.x - 70 << "|" << mouse.y - 65 << std::endl << std::endl;
+
+                for (auto &i : tabBtn) {
+                    // std::cout << i.getX() << "|" << i.getY() << "-" << i.getX() + 62.5 << "|" << i.getY() + 125 << std::endl;
+                    if (mouse.x - 70 > i.getX() && mouse.x - 70 < i.getX() + 62.5 && mouse.y - 65 > i.getY() && mouse.y - 65 < i.getY() + 125)
+                        i.check();
+                    // if (mouse.x)
+                }
+                if (mouse.x - 70 > 802 && mouse.x - 70 < 848 && mouse.y - 65 > 940 && mouse.y - 65 < 992)
+                    counter.inc();
+                if (mouse.x - 70 > 1001 && mouse.x - 70 < 1051 && mouse.y - 65 > 937 && mouse.y - 65 < 987)
+                    counter.dec();
+                // button4.check();
+            }
         }
-        button.draw(_window);
+        for (auto &i : tabBtn)
+            i.draw(_window);
+        // button4.draw(_window);
+        counter.draw(_window);
         _window.display();
     }
 }
