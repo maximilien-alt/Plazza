@@ -53,8 +53,13 @@ void Plazza::Menu::loop()
 
                 for (auto &i : tabBtn) {
                     // std::cout << i.getX() << "|" << i.getY() << "-" << i.getX() + 62.5 << "|" << i.getY() + 125 << std::endl;
-                    if (mouse.x - 70 > i.getX() && mouse.x - 70 < i.getX() + 62.5 && mouse.y - 65 > i.getY() && mouse.y - 65 < i.getY() + 125)
+                    if (mouse.x - 70 > i.getX() && mouse.x - 70 < i.getX() + 62.5 && mouse.y - 65 > i.getY() && mouse.y - 65 < i.getY() + 125) {
+                        for (auto &b : tabBtn) {
+                            if (b.getstate() == true)
+                                b.check();
+                        }
                         i.check();
+                    }
                     // if (mouse.x)
                 }
                 if (mouse.x - 70 > 802 && mouse.x - 70 < 848 && mouse.y - 65 > 940 && mouse.y - 65 < 992)

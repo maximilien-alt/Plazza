@@ -46,3 +46,8 @@ int Plazza::Button::getY(void) const
 {
     return (posy);
 }
+
+int Plazza::Button::getstate(void) const
+{
+    return (_state);
+}

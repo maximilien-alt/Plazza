@@ -20,6 +20,8 @@ namespace Plazza {
             void draw(sf::RenderWindow &win);
             int getX(void) const;
             int getY(void) const;
+            int getstate(void) const;
+
         private:
             bool _state = false;
             sf::Texture _texture;
