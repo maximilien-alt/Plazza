@@ -13,6 +13,7 @@
 #include "Button.hpp"
 #include "Count.hpp"
 #include "Text.hpp"
+#include "Popup.hpp"
 
 namespace Plazza {
     class Menu {

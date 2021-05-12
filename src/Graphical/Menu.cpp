@@ -25,10 +25,9 @@ void Plazza::Menu::loop()
     Text l(50, 940, 680 - 150,sf::Color::Red, "L");
     Text m(50, 940, 680 - 225,sf::Color::Red, "M");
     Text s(50, 940, 680 - 300,sf::Color::Red, "S");
-    
     Text click(50, 885, 880,sf::Color::Red, "Click to");
     Text order(50, 885, 920,sf::Color::Red, " Order");
-
+    Popup popup("Pizza ready", 200, 200);
     Count counter(810, 780);
     for (int a = 0; a < 5; a++)
     {
@@ -99,6 +98,7 @@ void Plazza::Menu::loop()
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
+        popup.draw(_window);
         _window.display();
     }
 }
