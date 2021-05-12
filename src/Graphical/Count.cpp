@@ -27,7 +27,8 @@ void Plazza::Count::inc()
 
 void Plazza::Count::dec()
 {
-    count -= 1;
+    if (count != 0)
+        count -= 1;
 }
 
 void Plazza::Count::draw(sf::RenderWindow &window)

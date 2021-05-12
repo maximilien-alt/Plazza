@@ -24,7 +24,7 @@ namespace Plazza {
         private:
             sf::RenderWindow _window;
             sf::Event _event;
-            std::vector<Button> tabBtn;
+            std::vector<Button> tabBtnSize;
     };
 };
 

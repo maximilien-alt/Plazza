@@ -24,13 +24,16 @@ void Plazza::Menu::loop()
     for (int a = 0; a < 5; a++)
     {
         Button button(830, 650 - 75 * a);
-        tabBtn.push_back(button);
+        tabBtnSize.push_back(button);
     }
-    // Button button(1920 / 2 - 50, 1080 / 2 - 0);
-    // Button button1(1920 / 2 - 50, 1080 / 2 - 75);
-    // Button button2(1920 / 2 - 50, 1080 / 2 - 150);
-    // Button button3(1920 / 2 - 50, 1080 / 2 - 225);
-    Button button4(1920 / 2 - 50, 1080 / 2 - 300);
+    Button regina(531 - 30, 370-50);
+    Button margarita(531 - 30, 720);
+    Button americana(1350 - 30, 370-50);
+    Button fantasia(1350 - 30, 720);
+
+    // Button regina(531, 370);
+
+    Button button4(1920 / 2 - 30, 1080 / 2 - 300);
 
     while (_window.isOpen())
     {
@@ -49,12 +52,12 @@ void Plazza::Menu::loop()
             if (_event.type == sf::Event::MouseButtonPressed)
             {
                 sf::Vector2i mouse = sf::Mouse::getPosition();
-                // std::cout << mouse.x - 70 << "|" << mouse.y - 65 << std::endl << std::endl;
+                std::cout << mouse.x - 70 << "|" << mouse.y - 65 << std::endl << std::endl;
 
-                for (auto &i : tabBtn) {
+                for (auto &i : tabBtnSize) {
                     // std::cout << i.getX() << "|" << i.getY() << "-" << i.getX() + 62.5 << "|" << i.getY() + 125 << std::endl;
                     if (mouse.x - 70 > i.getX() && mouse.x - 70 < i.getX() + 62.5 && mouse.y - 65 > i.getY() && mouse.y - 65 < i.getY() + 125) {
-                        for (auto &b : tabBtn) {
+                        for (auto &b : tabBtnSize) {
                             if (b.getstate() == true)
                                 b.check();
                         }
@@ -69,10 +72,15 @@ void Plazza::Menu::loop()
                 // button4.check();
             }
         }
-        for (auto &i : tabBtn)
+        for (auto &i : tabBtnSize)
             i.draw(_window);
         // button4.draw(_window);
         counter.draw(_window);
+        regina.draw(_window);
+        margarita.draw(_window);
+        americana.draw(_window);
+        fantasia.draw(_window);
+
         _window.display();
     }
 }
