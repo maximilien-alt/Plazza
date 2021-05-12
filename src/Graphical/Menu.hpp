@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 #include "Button.hpp"
 #include "Count.hpp"
+#include "Text.hpp"
 
 namespace Plazza {
     class Menu {
