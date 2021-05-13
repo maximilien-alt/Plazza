@@ -21,6 +21,7 @@ namespace Plazza {
             int getX(void) const;
             int getY(void) const;
             int getstate(void) const;
+            void setState(bool);
 
         private:
             bool _state = false;

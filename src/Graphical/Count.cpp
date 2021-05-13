@@ -10,7 +10,7 @@
 Plazza::Count::Count(float x, float y) : position(x, y), _rect(0, 0, 100, 200), _plus(), _minus()
 {
     _texture.loadFromFile("ressources/plus-moins.png");
-    count = 0;
+    count = 1;
     _plus.setTexture(_texture);
     _minus.setTexture(_texture);
     _font.loadFromFile("ressources/Italianno-Regular.ttf");
@@ -27,8 +27,13 @@ void Plazza::Count::inc()
 
 void Plazza::Count::dec()
 {
-    if (count != 0)
+    if (count != 1)
         count -= 1;
+}
+
+int Plazza::Count::getNb() const
+{
+    return (count);
 }
 
 void Plazza::Count::draw(sf::RenderWindow &window)

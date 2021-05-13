@@ -51,3 +51,8 @@ int Plazza::Button::getstate(void) const
 {
     return (_state);
 }
+
+void Plazza::Button::setState(bool state)
+{
+    _state = state;
+}

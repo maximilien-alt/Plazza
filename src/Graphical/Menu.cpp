@@ -20,6 +20,7 @@ Plazza::Menu::~Menu()
 
 void Plazza::Menu::loop()
 {
+    std::string strorder;
     Text xxl(50, 940, 680,sf::Color::Red, "XXL");
     Text xl(50, 940, 680 - 75,sf::Color::Red, "XL");
     Text l(50, 940, 680 - 150,sf::Color::Red, "L");
@@ -60,12 +61,9 @@ void Plazza::Menu::loop()
             if (_event.type == sf::Event::MouseButtonPressed)
             {
                 sf::Vector2i mouse = sf::Mouse::getPosition();
-                std::cout << mouse.x - 70 << "|" << mouse.y - 65 << std::endl
-                          << std::endl;
 
                 for (auto &i : tabBtnSize)
                 {
-                    // std::cout << i.getX() << "|" << i.getY() << "-" << i.getX() + 62.5 << "|" << i.getY() + 125 << std::endl;
                     if (mouse.x - 70 > i.getX() + 10 && mouse.x - 70 < i.getX() + 62.5 - 10 && mouse.y - 65 > i.getY() + 10 && mouse.y - 65 < i.getY() + 125 - 10)
                     {
                         for (auto &b : tabBtnSize)
@@ -75,13 +73,65 @@ void Plazza::Menu::loop()
                         }
                         i.check();
                     }
-                    // if (mouse.x)
                 }
                 if (mouse.x - 70 > 820 && mouse.x - 70 < 871 && mouse.y - 65 > 820 && mouse.y - 65 < 870)
                     counter.inc();
                 if (mouse.x - 70 > 1022 && mouse.x - 70 < 1064 && mouse.y - 65 > 820 && mouse.y - 65 < 869)
                     counter.dec();
-                // button4.check();
+                if (mouse.x - 70 > regina.getX() + 10 && mouse.x - 70 < regina.getX() + 62.5 - 10 && mouse.y - 65 > regina.getY() + 10 && mouse.y - 65 < regina.getY() + 125 - 10) {
+                    margarita.setState(false);
+                    americana.setState(false);
+                    fantasia.setState(false);
+                    regina.check();
+                }
+                if (mouse.x - 70 > margarita.getX() + 10 && mouse.x - 70 < margarita.getX() + 62.5 - 10 && mouse.y - 65 > margarita.getY() + 10 && mouse.y - 65 < margarita.getY() + 125 - 10) {
+                    regina.setState(false);
+                    americana.setState(false);
+                    fantasia.setState(false);
+                    margarita.check();
+                }
+                if (mouse.x - 70 > americana.getX() + 10 && mouse.x - 70 < americana.getX() + 62.5 - 10 && mouse.y - 65 > americana.getY() + 10 && mouse.y - 65 < americana.getY() + 125 - 10) {
+                    margarita.setState(false);
+                    regina.setState(false);
+                    fantasia.setState(false);
+                    americana.check();
+                }
+                if (mouse.x - 70 > fantasia.getX() + 10 && mouse.x - 70 < fantasia.getX() + 62.5 - 10 && mouse.y - 65 > fantasia.getY() + 10 && mouse.y - 65 < fantasia.getY() + 125 - 10) {
+                    margarita.setState(false);
+                    americana.setState(false);
+                    regina.setState(false);
+                    fantasia.check();
+                }
+
+                if (mouse.x - 70 > 882 && mouse.x - 70 < 1017 && mouse.y - 65 > 892 && mouse.y - 65 < 979) {
+                    if (margarita.getstate() == true)
+                        strorder = "margarita ";
+                    else if (americana.getstate() == true)
+                        strorder = "americana ";
+                    else if (regina.getstate() == true)
+                        strorder = "regina ";
+                    else if (fantasia.getstate() == true)
+                        strorder = "fantasia ";
+                    else
+                        strorder = "";
+                    if (strorder != "") {
+                        if (tabBtnSize.at(0).getstate() == true)
+                            strorder.append("XXL ");
+                        else if (tabBtnSize.at(1).getstate() == true)
+                            strorder.append("XL ");
+                        else if (tabBtnSize.at(2).getstate() == true)
+                            strorder.append("L ");
+                        else if (tabBtnSize.at(3).getstate() == true)
+                            strorder.append("M ");
+                        else if (tabBtnSize.at(4).getstate() == true)
+                            strorder.append("S ");
+                        else 
+                            strorder = "";
+                    }
+                    if (strorder != "")
+                        strorder.append(std::to_string(counter.getNb()));
+                    std::cout << strorder << std::endl;
+                }
             }
         }
         for (auto &i : tabBtnSize)

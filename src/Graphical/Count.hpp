@@ -18,6 +18,7 @@ namespace Plazza {
             void inc();
             void dec();
             void draw(sf::RenderWindow &);
+            int getNb() const;
             ~Count();
         private:
             sf::Sprite _plus, _minus;
