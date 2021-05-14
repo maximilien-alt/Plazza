@@ -19,6 +19,7 @@ Plazza::Socket::~Socket()
 
 void Plazza::Socket::createServerSocket()
 {
+    unlink("socket");
     if (bind(_socketId, (struct sockaddr *)&_settings, sizeof(_settings)) == -1)
         throw Error("[Create Socket Server]: Fail binding socket!");
     if (listen(_socketId, 1) == -1)
