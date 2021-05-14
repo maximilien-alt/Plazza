@@ -21,12 +21,12 @@ namespace Plazza {
             int getNb() const;
             ~Count();
         private:
+            sf::Vector2f position;
+            sf::IntRect _rect;
             sf::Sprite _plus, _minus;
             sf::Texture _texture;
-            sf::Vector2f position;
             sf::Font _font;
             sf::Text _text;
-            sf::IntRect _rect;
             int count;
     };
 }

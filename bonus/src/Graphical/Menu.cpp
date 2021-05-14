@@ -6,10 +6,11 @@
 */
 
 #include "Menu.hpp"
-#include <iostream>
+#include "../../include/include.hpp"
 
-Plazza::Menu::Menu()
+Plazza::Menu::Menu(int orderfd)
 {
+    _orderfd = dup(orderfd);
     _window.create(sf::VideoMode(1920, 1080), "My _window");
 }
 
@@ -21,6 +22,7 @@ Plazza::Menu::~Menu()
 void Plazza::Menu::loop()
 {
     std::string strorder;
+    std::ofstream stream(".order.txt");
     Text xxl(50, 940, 680,sf::Color::Red, "XXL");
     Text xl(50, 940, 680 - 75,sf::Color::Red, "XL");
     Text l(50, 940, 680 - 150,sf::Color::Red, "L");
@@ -128,8 +130,10 @@ void Plazza::Menu::loop()
                             strorder = "";
                     }
                     if (strorder != "")
-                        strorder.append(std::to_string(counter.getNb()));
+                        strorder.append("x" + std::to_string(counter.getNb()));
                     std::cout << strorder << std::endl;
+                    // stream << strorder << std::endl;
+                    dprintf(_orderfd, "%s\n", strorder.c_str());
                 }
             }
         }
@@ -148,7 +152,7 @@ void Plazza::Menu::loop()
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
-        popup.draw(_window);
+        // popup.draw(_window);
         _window.display();
     }
 }

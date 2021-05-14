@@ -33,10 +33,11 @@ void splitLineIntoVector(std::string toParse, std::vector<std::string> &vector, 
 std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status)
 {
     std::vector<Plazza::Order> vector;
+    static std::ifstream order(".order.txt");
 
-    getline(std::cin, _line);
-    if (std::cin.eof())
-        throw Error("[Reception]: EOF!");
+    getline(order, _line);
+    if (order.eof())
+        return vector;
     _currentOrders.clear();
     splitLineIntoVector(_line, _currentOrders, ";");
     for (auto &n: _currentOrders) {

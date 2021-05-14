@@ -18,13 +18,14 @@
 namespace Plazza {
     class Menu {
         public:
-            Menu();
+            Menu(int orderfd);
             ~Menu();
             void loop();
 
         protected:
         private:
             sf::RenderWindow _window;
+            int _orderfd;
             sf::Event _event;
             std::vector<Button> tabBtnSize;
     };

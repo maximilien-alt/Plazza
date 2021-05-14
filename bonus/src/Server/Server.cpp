@@ -7,7 +7,7 @@
 
 #include "Server.hpp"
 
-Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown), log("log.txt")
+Plazza::Server::Server(const int &multiplier, const int &cooks, const int &cooldown, int ordersfd): _timeMultiplier(multiplier), _cooksPerKitchen(cooks), _ingredientsCoolDown(cooldown), log("log.txt")
 {
     if (cooldown < 1)
         throw Error("Ingredients cooldown is in milliseconds: try at least bigger than 1000");
@@ -17,6 +17,7 @@ Plazza::Server::Server(const int &multiplier, const int &cooks, const int &coold
         throw Error(e.what());
     }
     _reception = new Plazza::Reception(_timeMultiplier);
+    _ordersfd = dup(ordersfd);
 }
 
 Plazza::Server::~Server()
@@ -145,7 +146,7 @@ void Plazza::Server::acceptOrRead(int i)
 {
     bool status = false;
 
-    if (i == 0) {
+    if (i == _ordersfd) {
         try {
             std::vector<Plazza::Order> orders = _reception->getOrders(status);
             parseOrders(orders);
@@ -170,6 +171,7 @@ void Plazza::Server::loop()
         value = _socket._select();
         if (value < 0)
             continue;
+        std::cout << _socket.getFdsSize() << std::endl;
         for (int i = 0; i < _socket.getFdsSize(); i += 1)
             if (_socket.isFdSet(i))
                 acceptOrRead(i);
