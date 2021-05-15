@@ -8,9 +8,8 @@
 #include "Menu.hpp"
 #include "../../include/include.hpp"
 
-Plazza::Menu::Menu(int orderfd)
+Plazza::Menu::Menu()
 {
-    _orderfd = dup(orderfd);
     _window.create(sf::VideoMode(1920, 1080), "My _window");
 }
 
@@ -19,7 +18,7 @@ Plazza::Menu::~Menu()
     _window.close();
 }
 
-void Plazza::Menu::loop()
+void Plazza::Menu::loop(Plazza::Socket graphical)
 {
     std::string strorder;
     std::ofstream stream(".order.txt");
@@ -132,8 +131,7 @@ void Plazza::Menu::loop()
                     if (strorder != "")
                         strorder.append("x" + std::to_string(counter.getNb()));
                     std::cout << strorder << std::endl;
-                    // stream << strorder << std::endl;
-                    dprintf(_orderfd, "%s\n", strorder.c_str());
+                    dprintf(graphical.getSocketId(), "%s\n", strorder.c_str());
                 }
             }
         }

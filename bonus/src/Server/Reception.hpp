@@ -9,6 +9,7 @@
 #define RECEPTION_HPP_
 
 #include "../Order.hpp"
+#include "Socket.hpp"
 
 namespace Plazza {
     class Reception {
@@ -16,7 +17,7 @@ namespace Plazza {
             Reception(const float time);
             ~Reception();
 
-            std::vector<Order> getOrders(bool &);
+            std::vector<Order> getOrders(bool &, Socket _socket, FILE *fd);
 
         private:
             std::string _line;

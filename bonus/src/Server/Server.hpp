@@ -16,7 +16,7 @@
 namespace Plazza {
     class Server {
         public:
-            Server(const int &, const int &, const int &, int);
+            Server(const int &, const int &, const int &);
             ~Server();
 
             void loop();
@@ -25,14 +25,14 @@ namespace Plazza {
             int _timeMultiplier;
             int _cooksPerKitchen;
             int _ingredientsCoolDown;
-            int _ordersfd;
+            int _graphicalId;
             Socket _socket;
             Reception *_reception;
             std::unordered_map<int, Order> _storage;
             KitchenManager _kitchenManager;
             std::ofstream log;
 
-            void acceptOrRead(int);
+            void acceptOrRead(int,FILE *);
             void createKitchen();
             void parseOrders(std::vector<Plazza::Order> orders);
             void readFromKitchen(int fd);

@@ -30,14 +30,15 @@ void splitLineIntoVector(std::string toParse, std::vector<std::string> &vector, 
     vector.push_back(toParse);
 }
 
-std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status)
+std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status, Plazza::Socket _socket, FILE *fd)
 {
     std::vector<Plazza::Order> vector;
-    static std::ifstream order(".order.txt");
 
-    getline(order, _line);
-    if (order.eof())
-        return vector;
+    try {
+        _line = _socket._getline(fd);
+    } catch (const std::exception &e) {
+        throw Error(e.what());
+    }
     _currentOrders.clear();
     splitLineIntoVector(_line, _currentOrders, ";");
     for (auto &n: _currentOrders) {

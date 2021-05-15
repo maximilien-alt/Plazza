@@ -14,18 +14,17 @@
 #include "Count.hpp"
 #include "Text.hpp"
 #include "Popup.hpp"
+#include "../Server/Socket.hpp"
 
 namespace Plazza {
     class Menu {
         public:
-            Menu(int orderfd);
+            Menu();
             ~Menu();
-            void loop();
+            void loop(Socket);
 
-        protected:
         private:
             sf::RenderWindow _window;
-            int _orderfd;
             sf::Event _event;
             std::vector<Button> tabBtnSize;
     };

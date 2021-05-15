@@ -17,8 +17,6 @@ bool is_digit(const char value)
 
 int main(int ac, char *av[])
 {
-    std::fstream orders(".order.txt");
-    int orderfd = open(".order.txt", O_RDWR);
     if (ac != 4)
         return (84);
     auto isnum = [](const std::string& value){return std::all_of(value.begin(), value.end(), is_digit);};
@@ -29,10 +27,14 @@ int main(int ac, char *av[])
             return (84);
     }
     try {
-        Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]) / 1000, orderfd);
-        Plazza::Menu menu(orderfd);
-        std::thread thr(&Plazza::Menu::loop, &menu);
-        thr.detach();
+        Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]) / 1000);
+        if (fork() == 0) {
+            Plazza::Menu menu;
+            Plazza::Socket graphical;
+            graphical._connect();
+            menu.loop(graphical);
+            exit(0);
+        }
         server.loop();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
