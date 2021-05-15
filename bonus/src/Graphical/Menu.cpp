@@ -151,6 +151,9 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
+        if (read(fd, buffer, 2048))
+            popup.draw(_window);
         _window.display();
     }
+    dprintf(graphical.getSocketId(), "shutdown\n");
 }
