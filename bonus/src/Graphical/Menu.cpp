@@ -18,6 +18,16 @@ Plazza::Menu::~Menu()
     _window.close();
 }
 
+std::string firstline(std::string buff)
+{
+    std::istringstream f(buff);
+    std::string line;
+
+    std::getline(f,line);
+    line.pop_back();
+    return line;
+}
+
 void Plazza::Menu::loop(Plazza::Socket graphical)
 {
     std::string strorder;
@@ -29,10 +39,9 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
     Text s(50, 940, 680 - 300,sf::Color::Red, "S");
     Text click(50, 885, 880,sf::Color::Red, "Click to");
     Text order(50, 885, 920,sf::Color::Red, " Order");
-    Popup popup("Pizza ready", 200, 200);
-    Count counter(810, 780);std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
+    Count counter(810, 780);
     int fd = open("log.txt", O_RDONLY);
-    char buffer[2048] = {0};
+    std::vector<Popup *>popups;
 
     for (int a = 0; a < 5; a++)
     {
@@ -51,6 +60,7 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         _window.clear(sf::Color::Black);
         sf::Sprite background;
         sf::Texture backgroundTexture;
+        char buffer[2048] = {0};
 
         backgroundTexture.loadFromFile("ressources/menu.png", sf::IntRect(0, 0, 1920, 1080));
         background.setTexture(backgroundTexture);
@@ -151,8 +161,11 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
-        if (read(fd, buffer, 2048))
-            popup.draw(_window);
+        read(fd, buffer, 2048);
+        if (strlen(buffer) != 0)
+            popups.push_back(new Popup("    " + firstline(std::string(buffer)), rand() % 920, rand() % 780));
+        for (auto &i : popups)
+            i->draw(_window);
         _window.display();
     }
     dprintf(graphical.getSocketId(), "shutdown\n");

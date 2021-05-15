@@ -17,12 +17,14 @@ namespace Plazza {
         public:
             Popup(std::string str, float x, float y);
             ~Popup();
+            bool is_clear(void);
             void draw(sf::RenderWindow &);
         private:
             sf::RectangleShape _rect;
             Text _text;
             sf::Vector2f pos;
             sf::Clock _clock;
+            bool _clear = false;
     };
 }
 

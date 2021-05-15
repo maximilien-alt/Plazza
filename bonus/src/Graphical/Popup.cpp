@@ -7,9 +7,9 @@
 
 #include "Popup.hpp"
 
-Plazza::Popup::Popup(std::string str, float x, float y) : _text(100, x + 150, y + 75, sf::Color::Green, str), pos(x, y), _clock()
+Plazza::Popup::Popup(std::string str, float x, float y) : _text(100, x, y + 30, sf::Color::Green, str), pos(x, y), _clock()
 {
-    _rect.setSize(sf::Vector2f(700, 300));
+    _rect.setSize(sf::Vector2f(1300, 300));
     _rect.setOutlineColor(sf::Color::Green);
     _rect.setOutlineThickness(10);
     _rect.setFillColor(sf::Color::Black);
@@ -18,6 +18,11 @@ Plazza::Popup::Popup(std::string str, float x, float y) : _text(100, x + 150, y 
 
 Plazza::Popup::~Popup()
 {
+}
+
+bool Plazza::Popup::is_clear(void)
+{
+    return _clear;
 }
 
 void Plazza::Popup::draw(sf::RenderWindow &window)
@@ -31,5 +36,6 @@ void Plazza::Popup::draw(sf::RenderWindow &window)
     if (elapsed.asSeconds() < 3) {
         window.draw(_rect);
         _text.draw(window);
-    }
+    } else
+        _clear = true;
 }
