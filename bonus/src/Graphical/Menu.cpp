@@ -57,6 +57,7 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         _window.draw(background);
         while (_window.pollEvent(_event))
         {
+            strorder = "";
             if (_event.type == sf::Event::Closed)
                 _window.close();
             if (_event.type == sf::Event::MouseButtonPressed)
@@ -130,7 +131,7 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
                             strorder = "";
                     }
                     if (strorder != "")
-                        strorder.append("x" + std::to_string(counter.getNb()));
+                        strorder += "x" + std::to_string(counter.getNb());
                     std::cout << strorder << std::endl;
                     dprintf(graphical.getSocketId(), "%s\n", strorder.c_str());
                 }
@@ -138,7 +139,6 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         }
         for (auto &i : tabBtnSize)
             i.draw(_window);
-        // button4.draw(_window);
         counter.draw(_window);
         regina.draw(_window);
         margarita.draw(_window);
@@ -151,9 +151,6 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
-        if (read(fd, buffer, 2048))
-            popup.draw(_window);
         _window.display();
     }
-    dprintf(graphical.getSocketId(), "shutdown\n");
 }

@@ -16,7 +16,7 @@ SRC	=	$(wildcard src/*.cpp)	\
 		$(wildcard src/Server/*.cpp)	\
 		$(wildcard src/Graphical/*.cpp)
 
-CPPFLAGS	=	-W -Wall -Wextra -Wno-class-memaccess -std=c++17
+CPPFLAGS	=	-W -Wall -Wextra -Wno-class-memaccess -std=c++17 -g3
 
 LD_FLAGS	=	-lpthread -lsfml-graphics -lsfml-window -lsfml-system
 

@@ -173,7 +173,6 @@ void Plazza::Server::loop()
         value = _socket._select();
         if (value < 0)
             continue;
-        std::cout << _socket.getFdsSize() << std::endl;
         for (int i = 0; i < _socket.getFdsSize(); i += 1)
             if (_socket.isFdSet(i))
                 acceptOrRead(i, graphicalFd);

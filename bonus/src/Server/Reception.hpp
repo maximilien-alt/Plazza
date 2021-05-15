@@ -17,7 +17,7 @@ namespace Plazza {
             Reception(const float time);
             ~Reception();
 
-            std::vector<Order> getOrders(bool &, Socket _socket, FILE *fd);
+            std::vector<Order> getOrders(bool &, Socket &_socket, FILE *fd);
 
         private:
             std::string _line;
