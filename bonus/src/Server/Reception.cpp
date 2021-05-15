@@ -36,6 +36,8 @@ std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status, Plazza::So
 
     try {
         _line = _socket._getline(fd);
+        if (_line == "shutdown")
+            throw Error("shutdown");
     } catch (const std::exception &e) {
         throw Error(e.what());
     }

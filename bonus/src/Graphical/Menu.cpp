@@ -30,7 +30,10 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
     Text click(50, 885, 880,sf::Color::Red, "Click to");
     Text order(50, 885, 920,sf::Color::Red, " Order");
     Popup popup("Pizza ready", 200, 200);
-    Count counter(810, 780);
+    Count counter(810, 780);std::cout << "Order Clear: Better have to watch the log.txt file ;)" << std::endl;
+    int fd = open("log.txt", O_RDONLY);
+    char buffer[2048] = {0};
+
     for (int a = 0; a < 5; a++)
     {
         Button button(850, 650 - 75 * a);
@@ -40,8 +43,6 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
     Button margarita(531 - 30, 720);
     Button americana(1330 - 30, 320);
     Button fantasia(1330 - 30, 720);
-
-    // Button regina(531, 370);
 
     Button button4(1920 / 2 - 30, 1080 / 2 - 300);
 
@@ -150,13 +151,9 @@ void Plazza::Menu::loop(Plazza::Socket graphical)
         s.draw(_window);
         click.draw(_window);
         order.draw(_window);
-        // popup.draw(_window);
+        if (read(fd, buffer, 2048))
+            popup.draw(_window);
         _window.display();
     }
+    dprintf(graphical.getSocketId(), "shutdown\n");
 }
-
-// int main(void)
-// {
-//     Plazza::Menu men;
-//     men.loop();
-// }
