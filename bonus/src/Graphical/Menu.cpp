@@ -31,7 +31,6 @@ std::string firstline(std::string buff)
 void Plazza::Menu::loop(Plazza::Socket graphical)
 {
     std::string strorder;
-    std::ofstream stream(".order.txt");
     Text xxl(50, 940, 680,sf::Color::Red, "XXL");
     Text xl(50, 940, 680 - 75,sf::Color::Red, "XL");
     Text l(50, 940, 680 - 150,sf::Color::Red, "L");

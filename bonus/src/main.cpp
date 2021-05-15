@@ -26,6 +26,7 @@ int main(int ac, char *av[])
         if (!isnum(tab[index - 1]))
             return (84);
     }
+    srand(time(NULL));
     try {
         Plazza::Server server(std::stoi(tab[0]), std::stoi(tab[1]), std::stoi(tab[2]) / 1000);
         if (fork() == 0) {
