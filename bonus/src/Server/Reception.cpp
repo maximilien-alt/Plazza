@@ -30,7 +30,7 @@ void splitLineIntoVector(std::string toParse, std::vector<std::string> &vector, 
     vector.push_back(toParse);
 }
 
-std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status, Plazza::Socket _socket, FILE *fd)
+std::vector<Plazza::Order> Plazza::Reception::getOrders(bool &status, Plazza::Socket &_socket, FILE *fd)
 {
     std::vector<Plazza::Order> vector;
 
