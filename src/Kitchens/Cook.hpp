@@ -37,6 +37,7 @@ namespace Plazza {
             STATUS _status;
             void (*_finish)(void *, Plazza::APizza);
             Plazza::Kitchen *_kitchen;
+            std::condition_variable _cond_var;
     };
 }
 
