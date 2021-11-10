@@ -1,4 +1,4 @@
-# CCP_plazza_2018
+# CCP_plazza_2020
 
 Kitchens are represented by processes, cooks by threads themselves sheduled by a thread pool.
 The threads are handled with the help of conditional variables and mutex.
